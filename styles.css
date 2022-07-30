@@ -1,0 +1,109 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 50px;
+  padding-top: 3em;
+  /* background-color:azure; */
+  background-image: url("https://wallpaperaccess.com/full/6134820.jpg");
+} 
+
+#banner {
+  background-color: rgb(247, 239, 202);
+  padding-left: 3em;
+  margin-left: -4em;
+  margin-right: -4em;
+  margin-top: -4em;
+}
+
+h1 {
+  /* background-color:rgb(129, 101, 7); */
+  font-family: arial;
+  font-weight: bold;
+  text-align: left;
+  padding-top: -10em;
+  
+}
+
+h1 span {
+  color: grey;
+
+}
+
+#map {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+nav{
+  font-family: Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+li {
+  display: inline-block;
+  padding: 10px;
+}
+
+li a {
+  padding: 8px;
+  background-color: rgb(247, 239, 202);
+  border-radius: 5px;
+  background-color: grey;
+  text-decoration: none;
+  color: rgb(247, 239, 202);
+}
+
+li :hover { 
+  color: grey;
+  background-color: rgb(247, 239, 202);
+  border: solid;
+  border-color: grey;
+
+}
+
+section {
+  background-image: url("https://wallpaperaccess.com/full/6134820.jpg");
+  background-size: cover;
+  background-position: bottom center;
+  height: 200;
+  width: 65%;
+  padding: 25px;
+  border-radius: 5px;
+  margin-top: 10px;
+  /* overflow: scroll; */
+}
+section p {
+  width: 100%;  
+}
+
+footer {
+  position: right;
+}
+
+footer p {
+  display: inline;
+}
+
+footer p a {
+  text-decoration: none;
+}
+
+.map-responsive{
+  overflow:hidden;
+  position:relative;
+  height:0;
+  padding-bottom:56.25%;
+}
+
+.map-responsive iframe{
+    left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    position:absolute;
+}
