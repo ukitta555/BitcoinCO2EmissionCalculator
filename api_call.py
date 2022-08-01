@@ -1,3 +1,6 @@
+##Start Mongodb server 
+##run python3 api_call.py
+
 from pydoc import resolve
 import re
 from urllib import response
@@ -30,7 +33,7 @@ app.json_encoder = MyEncoder
 def homepage():
     return "Welcome"
 
-@app.route("/getblock")
+@app.route("/getblock")         ##returns 0000000000000000000899a1745839ff32b4ed130580db1c3e37c4ed557cbca5 block info
 def fetchstore():
     try:
         client = MongoClient("mongodb://127.0.0.1:27017")
@@ -53,7 +56,7 @@ def fetchstore():
 
     except:
         return "nope" 
-@app.route("/getprevblock")
+@app.route("/getprevblock")   ## returns the latest block info and stores in mongodb
 def getprev():
     client = MongoClient("mongodb://127.0.0.1:27017")
     mydb = client["BlockhashDB"]
@@ -85,7 +88,7 @@ def getprev():
     except:
         return "nope sorry"    
 
-@app.route("/fetchAll")          
+@app.route("/fetchAll")  ##get the collection of latest blocks and Ips        
 def fetchall():
     try:
         client = MongoClient("mongodb://127.0.0.1:27017")   
