@@ -18,11 +18,10 @@ body {
 }
 
 h1 {
-  /* background-color:rgb(129, 101, 7); */
   font-family: arial;
   font-weight: bold;
   text-align: left;
-  padding-top: -10em;
+  padding-top: 1em;
   
 }
 
