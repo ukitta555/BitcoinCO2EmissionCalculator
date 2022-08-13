@@ -3,44 +3,57 @@
 }
 
 body {
-  padding: 50px;
-  padding-top: 3em;
-  /* background-color:azure; */
+  margin: 8px;
   background-image: url("https://wallpaperaccess.com/full/6134820.jpg");
 } 
 
 #banner {
+  display: block;
   background-color: rgb(247, 239, 202);
-  padding-left: 3em;
-  margin-left: -4em;
-  margin-right: -4em;
-  margin-top: -4em;
+  padding: 8px;
+  margin-top: -8px; 
+  margin-left: -8px;
+  margin-right: -8px;
+  margin-bottom: 8px;
+}
+
+#YorkU {
+  /* display: inline; */
+  float: right;
+  width: 100px;
+  height: auto;
 }
 
 h1 {
+  display: inline;
   font-family: arial;
   font-weight: bold;
   text-align: left;
-  padding-top: 1em;
+  /* padding-top: 1em; */
   
 }
 
-h1 span {
-  color: grey;
-
-}
+/* h1 span {
+  color: rgb(0, 0, 0);
+} */
 
 #map {
   display: flex;
   justify-content: center;
   height: 100vh;
   width: 100vw;
+  border: 10px solid black;
+  margin-top: 100px;
 }
 
 nav{
   font-family: Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   font-weight: bold;
+}
+
+ul{
+  padding: 0px;
 }
 
 li {
@@ -52,7 +65,7 @@ li a {
   padding: 8px;
   background-color: rgb(247, 239, 202);
   border-radius: 5px;
-  background-color: grey;
+  background-color: rgb(0, 0, 0);
   text-decoration: none;
   color: rgb(247, 239, 202);
 }
@@ -106,3 +119,8 @@ footer p a {
     width:100%;
     position:absolute;
 }
+
+.iframe{
+  border:40px solid black;
+  }
+
