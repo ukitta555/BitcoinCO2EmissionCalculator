@@ -37,14 +37,19 @@ h1 {
   color: rgb(0, 0, 0);
 } */
 
-#map {
+/* #map {
   display: flex;
   justify-content: center;
   height: 100vh;
   width: 100vw;
   border: 10px solid black;
   margin-top: 100px;
-}
+} */
+
+.map{
+  display: flex;
+  justify-content: center;
+  }
 
 nav{
   font-family: Helvetica, Arial, sans-serif;
@@ -120,7 +125,4 @@ footer p a {
     position:absolute;
 }
 
-.iframe{
-  border:40px solid black;
-  }
 
