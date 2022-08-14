@@ -16,14 +16,14 @@
   <img id="YorkU" src="images/yorku-logo.jpeg" alt="YorkU">
   <nav>
     <ul>
-     <li><a href="BlockCO2Emissions">CO₂ Map</a></li>
+     <li><a href="index.html">KwH Map</a></li>
      <li><a href="#methodology">Methodology</a></li>
     </ul>
   </nav>
 </div>
   
 <div class="map">
-  <iframe width='100%' height='400px' src="https://api.mapbox.com/styles/v1/getoutofthatgarden/cl6t7n777002b14pf0vp245aa.html?title=false&access_token=pk.eyJ1IjoiZ2V0b3V0b2Z0aGF0Z2FyZGVuIiwiYSI6ImNsNnJ3ZGF4eDB2ZXozZG1tOXd2NmJrdHQifQ.6TJm5mseSvYidZ9Lu0UCPA&zoomwheel=false#1.4/29.3/-12.2" title="Block KWH consumption" style="border:none;"></iframe>
+    <iframe width='100%' height='400px' src="https://api.mapbox.com/styles/v1/getoutofthatgarden/cl6t8k7mh000f15plor3e3bxf.html?title=false&access_token=pk.eyJ1IjoiZ2V0b3V0b2Z0aGF0Z2FyZGVuIiwiYSI6ImNsNnJ3ZGF4eDB2ZXozZG1tOXd2NmJrdHQifQ.6TJm5mseSvYidZ9Lu0UCPA&zoomwheel=false#1.4/29.3/-12.2" title="CO2 emissions per block" style="border:none;"></iframe>
 </div>
     
   <section>
