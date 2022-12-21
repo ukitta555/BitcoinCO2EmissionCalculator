@@ -1,0 +1,9 @@
+from django.db import models
+
+from src.bitcoin_emissions.models.uuid_base_db_model import UUIDModel
+
+
+class Location(UUIDModel):
+    location_name = models.CharField(max_length=200)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
