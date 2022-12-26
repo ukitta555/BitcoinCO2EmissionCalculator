@@ -46,4 +46,5 @@ while last_fetched_block != 716489:
     api_response = result.json().get("data")  # get dict representation of json response
 
     block_range = fetch_block_info_from_api_response(response=api_response, blocks=10)
+    print(block_range)
     time.sleep(2)  # put a sleep timer on the loop to pace the api calls

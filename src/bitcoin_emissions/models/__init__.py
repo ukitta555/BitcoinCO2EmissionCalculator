@@ -1,7 +1,6 @@
 from .pool_db_model import Pool
 from .location_db_model import Location
 from .pool_locations_db_model import PoolLocation
-from .co2_emission_factors_db_model import CO2EmissionFactor
 from .mining_gear_db_model import MiningGear
 from .pool_electricity_consumption_and_co2e_emission_history_db_model import \
     PoolElectricityConsumptionAndCO2EEmissionHistory
