@@ -8,3 +8,5 @@ class MiningGear(UUIDModel):
     release_date = models.DateField()
     efficiency = models.DecimalField(max_digits=12, decimal_places=11)
 
+    def __str__(self):
+        return f"Gear: {self.name}, release date: {self.release_date}"

@@ -1,19 +1,20 @@
 import datetime
-from decimal import Decimal
+import os
 
 import pytest
 from openpyxl import load_workbook
 
 from src.bitcoin_emissions.models import Pool, Location, PoolLocation
-from src.xlsx_data_parser import parse_excel_for_pool_and_location_info
+from src.bitcoin_emissions.xlsx_data_parser import ExcelParser
 
 pytestmark = pytest.mark.django_db
 
 
 class TestExcelParser:
-    def test_memes(self):
-        workbook = load_workbook("./mock_pool_data.xlsx")
-        parse_excel_for_pool_and_location_info(workbook=workbook)
+
+    def test_pool_info_parser(self):
+        workbook = load_workbook(os.path.dirname(__file__) + "/mock_pool_data.xlsx")
+        ExcelParser().parse_excel_for_pool_and_location_info(workbook=workbook)
         assert self._get_pool_names_from_db() == \
                {
                    "F2Pool",
@@ -76,7 +77,7 @@ class TestExcelParser:
         return Location.objects.get(location_name="Cloudflare").uuid
 
     def _get_poollocations_of_mocked_pool(self):
-        pool_locations =  list(PoolLocation.objects.filter(
+        pool_locations = list(PoolLocation.objects.filter(
             blockchain_pool__pool_name="F2Pool"
         ).values(
             "blockchain_pool_id",
