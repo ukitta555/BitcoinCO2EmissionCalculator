@@ -45,10 +45,13 @@ def mock_blocks_data():
 
 @pytest.fixture
 def mock_hash_rate_data():
+    # comments are for the 2020-01-06 case
     return {
         "F2Pool": Decimal(10),  # 24 * X * Y = 24 * 10 * 3 = 720; 720 / 1 = 720 GWh
-        "QueenPool": Decimal(5),  # 24 * X * Y = 24 * 5 * 3 = 360; 360 / 2 = 180 GWh
-        "City17": Decimal(3),  # 24 * X * Y = 24 * 3 * 3 =  216; 216 / 1 = 216 GWh
+        "QueenPool": Decimal(5),  # 24 * X * Y = 24 * 5 * 3 = 360; 360 / 1 = 360 GWh (unknown)
+        "City17": Decimal(3),  # 24 * X * Y = 24 * 3 * 3 =  216; 216 / 1 = 216 GWh (unknown)
+        "unknown": Decimal(1), # 24 * X * Y = 24 * 1 * 3 = 72; 216 / 1 = 72 GWh (unknown)
+        "PoolWithoutInfo": Decimal(0.5), # 24 * X * Y = 24 * 0.5 * 3 =  36; 216 / 1 = 36 GWh (unknown)
     }
 
 
@@ -96,34 +99,48 @@ def mock_pool_servers():
     seattle = Location.objects.create(location_name="Seattle", longitude=1, latitude=1)
     neverland = Location.objects.create(location_name="Neverland", longitude=2, latitude=2)
 
+    # 2018-01-03
+    PoolLocation.objects.create(
+        blockchain_pool=queenpool,
+        blockchain_pool_location=neverland,
+        valid_for_date=datetime(year=2018, month=1, day=3),
+        emission_factor=0.33
+    )
+    # 2020-01-01
     PoolLocation.objects.create(
         blockchain_pool=f2pool,
         blockchain_pool_location=london,
         valid_for_date=datetime(year=2020, month=1, day=1),
-        emission_factor=0.1
+        emission_factor=0.5
     )
     PoolLocation.objects.create(
         blockchain_pool=f2pool,
         blockchain_pool_location=seattle,
-        valid_for_date=datetime(year=2020, month=1, day=3),
-        emission_factor=0.2
+        valid_for_date=datetime(year=2020, month=1, day=1),
+        emission_factor=0.4
     )
     PoolLocation.objects.create(
         blockchain_pool=queenpool,
-        blockchain_pool_location=neverland,
-        valid_for_date=datetime(year=2018, month=1, day=3),
-        emission_factor=0.3
-    )
-    PoolLocation.objects.create(
-        blockchain_pool=queenpool,
-        blockchain_pool_location=neverland,
-        valid_for_date=datetime(year=2018, month=1, day=3),
-        emission_factor=0.3
+        blockchain_pool_location=london,
+        valid_for_date=datetime(year=2020, month=1, day=1),
+        emission_factor=0.5
     )
     PoolLocation.objects.create(
         blockchain_pool=city17,
         blockchain_pool_location=london,
         valid_for_date=datetime(year=2020, month=1, day=1),
-        emission_factor=0.1
+        emission_factor=0.5
     )
-
+    # 2020-01-03
+    PoolLocation.objects.create(
+        blockchain_pool=f2pool,
+        blockchain_pool_location=london,
+        valid_for_date=datetime(year=2020, month=1, day=3),
+        emission_factor=0.5
+    )
+    PoolLocation.objects.create(
+        blockchain_pool=f2pool,
+        blockchain_pool_location=seattle,
+        valid_for_date=datetime(year=2020, month=1, day=3),
+        emission_factor=0.4
+    )

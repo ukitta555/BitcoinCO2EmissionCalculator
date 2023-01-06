@@ -20,7 +20,7 @@ class HashRateCalculator:
             pool_hash_rates_ghs[pool_name] = \
                 (cls._get_share_of_mined_blocks_by_pool(pool_name_group, rolling_window_df) *
                  cls._get_network_hash_rate_ghs(avg_difficulty))\
-                .quantize(Decimal('.0000001'), rounding=ROUND_DOWN)  # rounding for testing purposes
+                .quantize(Decimal('.0000001'))  # rounding for testing purposes
         return pool_hash_rates_ghs
 
     @classmethod

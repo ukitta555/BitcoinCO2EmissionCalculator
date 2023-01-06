@@ -17,7 +17,7 @@ class TestPoolHashrateCalculations:
             rolling_window=mock_blocks_data
         )
 
-        assert result.get("F2Pool") == Decimal(2**32/(10**18 * 300)).quantize(Decimal('.0000001'), rounding=ROUND_DOWN)
-        assert result.get("QueenPool") == Decimal(2**32/(10**18 * 600)).quantize(Decimal('.0000001'), rounding=ROUND_DOWN)
-        assert result.get("City17") == Decimal(2**32/(10**18 * 900)).quantize(Decimal('.0000001'), rounding=ROUND_DOWN)
+        assert result.get("F2Pool") == Decimal(2**32/(10**18 * 300)).quantize(Decimal('.0000001'))
+        assert result.get("QueenPool") == Decimal(2**32/(10**18 * 600)).quantize(Decimal('.0000001'))
+        assert result.get("City17") == Decimal(2**32/(10**18 * 900)).quantize(Decimal('.0000001'))
 
