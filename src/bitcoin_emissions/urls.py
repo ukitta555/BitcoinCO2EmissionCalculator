@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
+from .views import Co2AndElectricityView
 
 urlpatterns = [
-    path('', views.index, name="index")
+    path('co2_and_electricity_date_range/', Co2AndElectricityView.as_view(), name="get_metrics")
 ]

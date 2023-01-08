@@ -3,7 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.calculations.electicity_and_co2_usage_calculator import ElectricityAndCO2Calculator
+from src.bitcoin_emissions.calculations.helper_calculators.electicity_and_co2_usage_calculator import ElectricityAndCO2Calculator
+from src.bitcoin_emissions.consts import UNKNOWN_POOL_LOCATION
 
 pytestmark = pytest.mark.django_db
 
@@ -26,13 +27,13 @@ class TestElectricityUsageCalculations:
         )
 
         assert result_2020_01_01 == {
-            "London": Decimal(240 + 240 + 144).quantize(Decimal("0.00000000001")), # F2 + Queen + City17
-            "Seattle": Decimal(240).quantize(Decimal("0.00000000001")), # F2
-            "unknown": Decimal(48 + 24).quantize(Decimal("0.00000000001")) # unknown + PoolWithoutInfo
+            "London": Decimal((240 + 240 + 144) * 1000000).quantize(Decimal("0.00000000001")), # F2 + Queen + City17
+            "Seattle": Decimal(240 * 1000000).quantize(Decimal("0.00000000001")), # F2
+            UNKNOWN_POOL_LOCATION: Decimal((48 + 24) * 1000000).quantize(Decimal("0.00000000001")) # unknown + PoolWithoutInfo
         }
         assert result_2020_01_06 == {
-            "London": Decimal(360).quantize(Decimal("0.00000000001")), # F2
-            "Seattle": Decimal(360).quantize(Decimal("0.00000000001")),
+            "London": Decimal(360 * 1000000).quantize(Decimal("0.00000000001")), # F2
+            "Seattle": Decimal(360 * 1000000).quantize(Decimal("0.00000000001")),
             # Queen + City17 + unknown + PoolWithoutInfo
-            "unknown": Decimal(360 + 216 + 72 + 36).quantize(Decimal("0.00000000001"))
+            UNKNOWN_POOL_LOCATION: Decimal((360 + 216 + 72 + 36) * 1000000).quantize(Decimal("0.00000000001"))
         }

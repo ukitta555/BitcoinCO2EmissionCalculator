@@ -1,21 +1,20 @@
 import logging
 from datetime import datetime
 
-import django
 import openpyxl
 from django.db import transaction
-from openpyxl import load_workbook
+from src.bitcoin_emissions.models import MiningGear
+from src.bitcoin_emissions.models import Pool, Location, PoolLocation
 
-from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, CLOUDFLARE_REGION, CURRENT_POOL_INFO_SHEET_NAME, \
+from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, CLOUDFLARE_REGION, \
     ANTMINER_DATA_SHEET_NAME
 
 logger = logging.getLogger(__name__)
 
+
 class ExcelParser:
     @classmethod
     def parse_excel_for_pool_and_location_info(cls, workbook: openpyxl.Workbook):
-        from src.bitcoin_emissions.models import Pool, Location, PoolLocation
-
         with transaction.atomic():
             for sheet in workbook:
                 print(f"Working with sheet {sheet.title}")
@@ -33,7 +32,7 @@ class ExcelParser:
                         longitude=longitude,
                     )
                     if new_location_was_created:
-                        print(f"Added location f{location_name} to the database")
+                        print(f"Added location {location_name} to the database")
 
                     PoolLocation.objects.create(
                         blockchain_pool=pool,
@@ -52,18 +51,13 @@ class ExcelParser:
 
         pool_name, location_name, emission_factor, source, \
             latitude, longitude = row
-        if sheet.title == CURRENT_POOL_INFO_SHEET_NAME:
-            validity_date = datetime.today()
-        else:
-            validity_date = datetime.strptime(sheet.title, "%b %d %Y")
+        validity_date = datetime.strptime(sheet.title, "%b %d %Y")
         if server_is_hosted_by_cloudflare(location_name):
             location_name, latitude, longitude = CLOUDFLARE_LOCATION_DATA
         return emission_factor, latitude, location_name, longitude, pool_name, source, validity_date
 
     @classmethod
     def parse_excel_with_mining_gear_data(cls, workbook: openpyxl.Workbook):
-        from src.bitcoin_emissions.models import MiningGear
-
         with transaction.atomic():
             sheet = workbook[ANTMINER_DATA_SHEET_NAME]
             for row_index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
@@ -73,11 +67,3 @@ class ExcelParser:
                     release_date=release_date,
                     efficiency=efficiency
                 )
-
-
-if __name__ == '__main__':
-    django.setup()
-    pool_data = load_workbook(filename='../data/Pool_data_final.xlsx')
-    ExcelParser.parse_excel_for_pool_and_location_info(workbook=pool_data)
-    mining_gear_data = load_workbook(filename='../../data/Antminer Models[90].xlsx')
-    ExcelParser.parse_excel_with_mining_gear_data(workbook=mining_gear_data)

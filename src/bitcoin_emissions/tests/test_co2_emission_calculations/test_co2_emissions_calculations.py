@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.calculations.electicity_and_co2_usage_calculator import ElectricityAndCO2Calculator
-from src.bitcoin_emissions.consts import UNKNOWN_CO2_EMISSIONS_FACTOR
+from src.bitcoin_emissions.calculations.helper_calculators.electicity_and_co2_usage_calculator import ElectricityAndCO2Calculator
+from src.bitcoin_emissions.consts import UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION
 
 pytestmark = pytest.mark.django_db
 
@@ -25,10 +25,10 @@ class TestCO2EmissionsCalculation:
             result_2020_01_01[key] = result_2020_01_01[key].quantize(Decimal("0.000001"))
 
         assert result_2020_01_01 == {
-            "London": Decimal(((240 + 240 + 144) * 0.5) / 1000).quantize(Decimal("0.000001")),
-            "Seattle": Decimal(((240 + 0 + 0) * 0.4) / 1000).quantize(Decimal("0.000001")),
-            "unknown":
-                Decimal(((48 + 24) * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
+            "London": Decimal(((240 + 240 + 144) * 1000000 * 0.5) / 1000).quantize(Decimal("0.000001")),
+            "Seattle": Decimal(((240 + 0 + 0) * 1000000 * 0.4) / 1000).quantize(Decimal("0.000001")),
+            UNKNOWN_POOL_LOCATION:
+                Decimal(((48 + 24) * 1000000 * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
                 .quantize(Decimal("0.000001"))
         }
 
@@ -47,10 +47,10 @@ class TestCO2EmissionsCalculation:
             result_2020_01_06[key] = result_2020_01_06[key].quantize(Decimal("0.000001"))
 
         assert result_2020_01_06 == {
-            "London": Decimal(((360 + 0 + 0) * 0.5) / 1000).quantize(Decimal("0.000001")),
-            "Seattle": Decimal(((360 + 0 + 0) * 0.4) / 1000).quantize(Decimal("0.000001")),
-            "unknown":
-                Decimal(((360 + 216 + 72 + 36) * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
+            "London": Decimal(((360 + 0 + 0) * 1000000 * 0.5) / 1000).quantize(Decimal("0.000001")),
+            "Seattle": Decimal(((360 + 0 + 0) * 1000000 * 0.4) / 1000).quantize(Decimal("0.000001")),
+            UNKNOWN_POOL_LOCATION:
+                Decimal(((360 + 216 + 72 + 36) * 1000000 * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
                 .quantize(Decimal("0.000001"))
         }
 
