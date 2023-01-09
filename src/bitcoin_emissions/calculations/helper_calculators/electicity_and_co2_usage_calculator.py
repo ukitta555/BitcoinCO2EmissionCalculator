@@ -19,10 +19,10 @@ class ElectricityAndCO2Calculator:
             .find_average_gear_efficiency_for_date(
                 date=calculation_date
             )
-        electricity_consumption_gwh_day = dict()
+        electricity_consumption_kwh_day = dict()
         co2_emissions_tco2e_day = dict()
 
-        electricity_consumption_gwh_day[UNKNOWN_POOL_LOCATION] = 0
+        electricity_consumption_kwh_day[UNKNOWN_POOL_LOCATION] = 0
         co2_emissions_tco2e_day[UNKNOWN_POOL_LOCATION] = 0
 
         """
@@ -50,7 +50,7 @@ class ElectricityAndCO2Calculator:
                         pool_servers_amount=1
                     )
 
-                electricity_consumption_gwh_day[UNKNOWN_POOL_LOCATION] += electricity_consumption_for_pool
+                electricity_consumption_kwh_day[UNKNOWN_POOL_LOCATION] += electricity_consumption_for_pool
                 co2_emissions_tco2e_day[UNKNOWN_POOL_LOCATION] += \
                     cls.get_co2_emissions(
                         electricity_consumption_for_server=electricity_consumption_for_pool,
@@ -64,8 +64,8 @@ class ElectricityAndCO2Calculator:
 
                 pool_server_location = get_server_location(pool_server)
 
-                if electricity_consumption_gwh_day.get(pool_server_location) is None:
-                    electricity_consumption_gwh_day[pool_server_location] = 0
+                if electricity_consumption_kwh_day.get(pool_server_location) is None:
+                    electricity_consumption_kwh_day[pool_server_location] = 0
                 if co2_emissions_tco2e_day.get(pool_server_location) is None:
                     co2_emissions_tco2e_day[pool_server_location] = 0
 
@@ -76,7 +76,7 @@ class ElectricityAndCO2Calculator:
                         pool_servers_amount=pool_servers.count()
                     )
 
-                electricity_consumption_gwh_day[pool_server_location] += electricity_consumption_for_server
+                electricity_consumption_kwh_day[pool_server_location] += electricity_consumption_for_server
 
                 co2_emissions_tco2e_day[pool_server_location] += \
                     cls.get_co2_emissions(
@@ -84,7 +84,7 @@ class ElectricityAndCO2Calculator:
                         emissions_factor=pool_server.emission_factor
                     )
 
-        return electricity_consumption_gwh_day, co2_emissions_tco2e_day
+        return electricity_consumption_kwh_day, co2_emissions_tco2e_day
 
     @classmethod
     def get_electricity_usage(cls, average_gear_efficiency_j_gh, pool_hash_rate_eh_s, pool_servers_amount):
