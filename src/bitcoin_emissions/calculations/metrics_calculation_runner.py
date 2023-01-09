@@ -1,7 +1,7 @@
+import logging
 from collections import deque
 from datetime import datetime, timedelta
 from fractions import Fraction
-from pprint import pprint
 
 import pandas as pd
 import requests
@@ -14,6 +14,8 @@ from src.bitcoin_emissions.consts import UNKNOWN_POOL
 from src.bitcoin_emissions.models import BlocksFoundByPoolPerWindow, Pool, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, Location
 
+
+logger = logging.getLogger(__name__)
 
 class MetricsCalculationRunner:
 
@@ -35,7 +37,7 @@ class MetricsCalculationRunner:
             oldest_block_height = api_response[-1]["height"]
             latest_block_height = api_response[0]["height"]
 
-            print(f"Fetched info for blocks "
+            logger.info(f"Fetched info for blocks "
                   f"({oldest_block_height}, "
                   f"{latest_block_height}), "
                   f"date {date_to_fetch_blocks_for}")
@@ -50,7 +52,7 @@ class MetricsCalculationRunner:
             rolling_window.extendleft(reversed(cleansed_block_range_date))
 
             if len(rolling_window) < 720:
-                print(
+                logger.info(
                     f"Length of rolling window at date {date_to_fetch_blocks_for} "
                     f"is less than 720: {len(rolling_window)}. "
                     f"Fetching blocks from the past to get 720 blocks."
@@ -91,11 +93,11 @@ class MetricsCalculationRunner:
                 co2_data=co2_emissions,
                 electricity_data=electricity,
             )
-            print(f"Sum of co2e emissions for date {date_to_fetch_blocks_for}:"
+            logger.info(f"Sum of co2e emissions for date {date_to_fetch_blocks_for}:"
                   f" {sum([i for i in co2_emissions.values()])}"
             )
             date_to_fetch_blocks_for += timedelta(days=1)
-        print(unknown_pools)
+        logger.info(unknown_pools)
 
     @classmethod
     def _get_blocks_for_date(cls, date_to_fetch_blocks_for):
@@ -107,7 +109,7 @@ class MetricsCalculationRunner:
         if data:
             return data
         else:
-            print(f"No blocks were mined on {date_to_fetch_blocks_for}")
+            logger.info(f"No blocks were mined on {date_to_fetch_blocks_for}")
 
     @classmethod
     def _fetch_interval_of_blocks(cls, start: int, end: int):
@@ -127,7 +129,7 @@ class MetricsCalculationRunner:
                 f"https://chain.api.btc.com/v3/block/{blocks_to_fetch}",
                 headers={"content-type": "application/json"}
             ).json()
-            print(
+            logger.info(
                 f"Fetched info for blocks ("
                 f"{api_response['data'][0]['height']}, "
                 f"{api_response['data'][-1]['height']}) "
@@ -151,14 +153,14 @@ class MetricsCalculationRunner:
 
     @classmethod
     def _validate_rolling_window(cls, rolling_window):
-        print("Validating rolling window....")
+        logger.info("Validating rolling window....")
         for i in range(len(rolling_window) - 1):
             if rolling_window[i]["height"] - rolling_window[i + 1]["height"] != 1:
-                print(f"Block {rolling_window[i + 1]['height']} "
+                logger.info(f"Block {rolling_window[i + 1]['height']} "
                       f"and {rolling_window[i]['height']} "
                       f"in positions {i + 1} and {i} are not their in place.")
                 return False
-        print("OK!")
+        logger.info("OK!")
         return True
 
     @classmethod
@@ -178,14 +180,14 @@ class MetricsCalculationRunner:
                     )
                 else:
                     unknown_blocks += blocks
-                    print(
+                    logger.info(
                         f"Unknown individual miners have mined {Fraction(blocks, len(rolling_window))} "
                         f"share of the rolling window."
                     )
             except exceptions.ObjectDoesNotExist:
                 unknown_blocks += blocks
                 unknown_pools.add(pool)
-                print(
+                logger.info(
                     f"There is no information about pool {pool} in DB. "
                     f"Its share of rolling window is: {Fraction(blocks, len(rolling_window))}. "
                 )

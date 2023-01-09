@@ -17,14 +17,14 @@ class ExcelParser:
     def parse_excel_for_pool_and_location_info(cls, workbook: openpyxl.Workbook):
         with transaction.atomic():
             for sheet in workbook:
-                print(f"Working with sheet {sheet.title}")
+                logger.info(f"Working with sheet {sheet.title}")
                 for row_index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
                     emission_factor, latitude, location_name, longitude, \
                         pool_name, source, validity_date = cls._fetch_data_about_pool(row, sheet)
 
                     pool, new_pool_was_created = Pool.objects.get_or_create(pool_name=pool_name)
                     if new_pool_was_created:
-                        print(f"Added pool {pool_name} to the database")
+                        logger.info(f"Added pool {pool_name} to the database")
 
                     location, new_location_was_created = Location.objects.get_or_create(
                         location_name=location_name,
@@ -32,7 +32,7 @@ class ExcelParser:
                         longitude=longitude,
                     )
                     if new_location_was_created:
-                        print(f"Added location {location_name} to the database")
+                        logger.info(f"Added location {location_name} to the database")
 
                     PoolLocation.objects.create(
                         blockchain_pool=pool,
@@ -41,8 +41,8 @@ class ExcelParser:
                         emission_factor=emission_factor,
                         information_source=source
                     )
-                    print(f"Added pool server for pool {pool_name} at location {location_name}")
-                    print(f"Finished row {row_index} of sheet {sheet.title}")
+                    logger.info(f"Added pool server for pool {pool_name} at location {location_name}")
+                    logger.info(f"Finished row {row_index} of sheet {sheet.title}")
 
     @classmethod
     def _fetch_data_about_pool(cls, row, sheet):
