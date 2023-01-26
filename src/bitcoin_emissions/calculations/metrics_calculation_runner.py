@@ -17,6 +17,7 @@ from src.bitcoin_emissions.models import BlocksFoundByPoolPerWindow, Pool, \
 
 logger = logging.getLogger(__name__)
 
+
 class MetricsCalculationRunner:
 
     @classmethod
@@ -187,6 +188,9 @@ class MetricsCalculationRunner:
             except exceptions.ObjectDoesNotExist:
                 unknown_blocks += blocks
                 unknown_pools.add(pool)
+                # TODO: make this message more informative;
+                # it is only displayed when there is no Pool object;
+                # in case there is one but there is no server info, it won't be displayed.
                 logger.info(
                     f"There is no information about pool {pool} in DB. "
                     f"Its share of rolling window is: {Fraction(blocks, len(rolling_window))}. "

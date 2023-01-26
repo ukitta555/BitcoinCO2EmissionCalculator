@@ -19,7 +19,7 @@ class TestCO2AndElectricitySaving:
             correct_co2_electricity_data
     ):
         MetricsCalculationRunner._save_info_about_co2_and_electricity(
-            date=datetime(year=2020, month=1, day=1),
+            date=datetime(year=2021, month=1, day=1),
             co2_data=mock_co2_info,
             electricity_data=mock_electricity_info,
         )

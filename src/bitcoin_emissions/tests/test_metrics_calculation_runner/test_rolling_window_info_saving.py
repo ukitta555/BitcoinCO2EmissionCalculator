@@ -19,7 +19,7 @@ class TestRollingWindowInfoSaving:
     ):
         MetricsCalculationRunner._save_info_about_rolling_window(
             rolling_window=mock_blocks_data,
-            end_date=datetime(year=2020, month=1, day=29),
+            end_date=datetime(year=2021, month=1, day=29),
             unknown_pools=set()
         )
         queryset = list(

@@ -1,3 +1,4 @@
+import logging
 from collections import deque
 from datetime import datetime
 from decimal import Decimal
@@ -5,7 +6,9 @@ from decimal import Decimal
 import pandas as pd
 
 from src.bitcoin_emissions.consts import AVERAGE_BLOCK_MINING_TIME_SECS, EXA_MULTIPLIER
-from src.bitcoin_emissions.models import BitcoinDifficulty
+from src.bitcoin_emissions.models import BitcoinDifficulty, NetworkHashRate
+
+logger = logging.getLogger(__name__)
 
 
 class HashRateCalculator:
@@ -25,6 +28,15 @@ class HashRateCalculator:
             pool_hash_rates_ehs[pool_name] = \
                 (cls._get_share_of_mined_blocks_by_pool(pool_name_group, rolling_window_df) *
                  cls._get_network_hash_rate_ehs(avg_difficulty))
+
+        NetworkHashRate.objects.get_or_create(
+            date=date,
+            network_hash_rate_eh_s=cls._get_network_hash_rate_ehs(avg_difficulty)
+        )
+        logger.info(f"Saved network hash rate "
+                    f"for {date}: "
+                    f"{cls._get_network_hash_rate_ehs(avg_difficulty)}")
+
         return pool_hash_rates_ehs
 
     @classmethod
@@ -36,11 +48,13 @@ class HashRateCalculator:
             difficulty_group: pd.DataFrame = difficulty_groups.get_group(difficulty)
             difficulty_moving_average += Decimal(len(difficulty_group) * difficulty) / Decimal(len(rolling_window_df))
 
-        # save for debugging purposes in production
-        BitcoinDifficulty.objects.create(
+        BitcoinDifficulty.objects.get_or_create(
             difficulty=difficulty_moving_average,
             date=date
         )
+        logger.info(f"Saved average bitcoin difficulty "
+                    f"for {date}: "
+                    f"{difficulty_moving_average}")
 
         return difficulty_moving_average
 

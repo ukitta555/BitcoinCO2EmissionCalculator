@@ -6,3 +6,6 @@ from .pool_electricity_consumption_and_co2e_emission_history_db_model import \
     PoolElectricityConsumptionAndCO2EEmissionHistory
 from .bitcoin_difficulty_db_model import BitcoinDifficulty
 from .blocks_found_by_pool_per_window_db_model import BlocksFoundByPoolPerWindow
+from .network_hashrate_db_model import NetworkHashRate
+from .average_efficiency_db_model import AverageEfficiency
+from .hashrate_per_pool_server_db_model import HashRatePerPoolServer

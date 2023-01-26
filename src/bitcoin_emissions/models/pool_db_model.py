@@ -6,3 +6,6 @@ from src.bitcoin_emissions.models.uuid_base_db_model import UUIDModel
 class Pool(UUIDModel):
     pool_name = models.CharField(max_length=100)
     locations = models.ManyToManyField("Location", through="PoolLocation")
+
+    def __str__(self):
+        return f"Pool {self.pool_name}"
