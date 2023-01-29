@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 import pytest
 from django.urls import reverse
 
-from src.bitcoin_emissions.consts import UNKNOWN_POOL_LOCATION
+from src.bitcoin_emissions.consts import UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, UNRECOGNIZED_POOL
 
 pytestmark = pytest.mark.django_db
 
@@ -85,7 +85,11 @@ class TestHistoryView:
                 },
                 "servers_at_location": [
                     {
-                        "blockchain_pool_name": "unknown",
+                        "blockchain_pool_name": UNKNOWN_POOL,
+                        "hash_rate": 1.0
+                    },
+                    {
+                        "blockchain_pool_name": UNRECOGNIZED_POOL,
                         "hash_rate": 1.0
                     },
                 ],

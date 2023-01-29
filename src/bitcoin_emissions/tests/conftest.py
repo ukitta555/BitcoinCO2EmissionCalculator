@@ -4,7 +4,8 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.consts import UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION
+from src.bitcoin_emissions.consts import UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, \
+    UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import Pool, Location, PoolLocation, HashRatePerPoolServer, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, MiningGear, NetworkHashRate, BitcoinDifficulty, AverageEfficiency
 
@@ -114,7 +115,8 @@ def mock_pool_servers(
     f2pool = Pool.objects.create(pool_name="F2Pool")
     queenpool = Pool.objects.create(pool_name="QueenPool")
     city17 = Pool.objects.create(pool_name="City17")
-    unknown_pool = Pool.objects.create(pool_name="unknown")
+    unknown_pool = Pool.objects.create(pool_name=UNKNOWN_POOL)
+    unrecognized_pool = Pool.objects.create(pool_name=UNRECOGNIZED_POOL)
 
     london = Location.objects.create(location_name="London", longitude=0, latitude=0)
     cloudflare = Location.objects.create(location_name="Cloudflare", longitude=1, latitude=1)
@@ -130,6 +132,12 @@ def mock_pool_servers(
     )
     unknown_2018_01_03 = PoolLocation.objects.create(
         blockchain_pool=unknown_pool,
+        blockchain_pool_location=unknown_loc,
+        valid_for_date=datetime(year=2018, month=1, day=3),
+        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+    )
+    unrecognized_2018_01_03 = PoolLocation.objects.create(
+        blockchain_pool=unrecognized_pool,
         blockchain_pool_location=unknown_loc,
         valid_for_date=datetime(year=2018, month=1, day=3),
         emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
@@ -165,6 +173,12 @@ def mock_pool_servers(
         valid_for_date=datetime(year=2021, month=1, day=1),
         emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
     )
+    unrecognized_2021_01_01 = PoolLocation.objects.create(
+        blockchain_pool=unrecognized_pool,
+        blockchain_pool_location=unknown_loc,
+        valid_for_date=datetime(year=2021, month=1, day=1),
+        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+    )
     # 2021-01-03
     f2pool_london_2021_01_03 = PoolLocation.objects.create(
         blockchain_pool=f2pool,
@@ -184,30 +198,40 @@ def mock_pool_servers(
         valid_for_date=datetime(year=2021, month=1, day=3),
         emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
     )
+    unrecognized_2021_01_03 = PoolLocation.objects.create(
+        blockchain_pool=unrecognized_pool,
+        blockchain_pool_location=unknown_loc,
+        valid_for_date=datetime(year=2021, month=1, day=3),
+        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+    )
     return {
         "pools": {
             "F2Pool": f2pool,
             "QueenPool": queenpool,
             "City17": city17,
-            "unknown": unknown_pool
+            UNKNOWN_POOL: unknown_pool,
+            UNRECOGNIZED_POOL: unrecognized_pool,
         },
         "locations": {
             "London": london,
             "Cloudflare": cloudflare,
             "Neverland": neverland,
-            "unknown_loc": unknown_loc
+            "unknown_loc": unknown_loc,
         },
         "pool_locations": {
             "queenpool_neverland_2018_01_03": queenpool_neverland_2018_01_03,
             "unknown_2018_01_03": unknown_2018_01_03,
+            "unrecognized_2018_01_03": unrecognized_2018_01_03,
             "f2pool_london_2021_01_01": f2pool_london_2021_01_01,
             "f2pool_seattle_2021_01_01": f2pool_seattle_2021_01_01,
             "queenpool_london_2021_01_01": queenpool_london_2021_01_01,
             "city17_london_2021_01_01": city17_london_2021_01_01,
             "unknown_2021_01_01": unknown_2021_01_01,
+            "unrecognized_2021_01_01": unrecognized_2021_01_01,
             "f2pool_london_2021_01_03": f2pool_london_2021_01_03,
             "f2pool_seattle_2021_01_03": f2pool_seattle_2021_01_03,
             "unknown_2021_01_03": unknown_2021_01_03,
+            "unrecognized_2021_01_03": unrecognized_2021_01_03
         }
     }
 
@@ -216,14 +240,17 @@ def mock_history(mock_pool_servers):
     mock_hash_rates = [
         5,  # queenpool_neverland_2018_01_03,
         1,  # unknown_2018_01_03,
+        1,  # unrecognized_2018_01_03,
         5,  # f2pool_london_2021_01_01
         5,  # f2pool_seattle_2021_01_01
         5,  # queenpool_london_2021_01_01
         3,  # city17_london_2021_01_01
         1,  # unknown_2021_01_01,
+        1,  # unrecognized_2021_01_01
         5,  # f2pool_london_2021_01_03
         5,  # f2pool_seattle_2021_01_03
         1,  # unknown_2021_01_03
+        1,  # unrecognized_2021_01_03
     ]
     for pool_location, mock_hash_rate in \
             zip(mock_pool_servers.get("pool_locations").values(), mock_hash_rates):

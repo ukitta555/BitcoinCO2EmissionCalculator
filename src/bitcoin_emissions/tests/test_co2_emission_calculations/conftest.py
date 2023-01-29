@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.consts import UNKNOWN_POOL, UNKNOWN_POOL_LOCATION
+from src.bitcoin_emissions.consts import UNKNOWN_POOL, UNKNOWN_POOL_LOCATION, UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import MiningGear, Pool, Location, PoolLocation
 
 
@@ -50,7 +50,13 @@ def correct_server_hash_rate_objects(
         {
             "blockchain_pool": mock_pool_servers.get("pools").get(UNKNOWN_POOL).uuid,
             "blockchain_pool_location": mock_pool_servers.get("locations").get("unknown_loc").uuid,
-            "hash_rate": Decimal(1.500000000000),
+            "hash_rate": Decimal(1.000000000000),
+            "date": datetime.date(year=2021, month=1, day=1),
+        },
+        {
+            "blockchain_pool": mock_pool_servers.get("pools").get(UNRECOGNIZED_POOL).uuid,
+            "blockchain_pool_location": mock_pool_servers.get("locations").get("unknown_loc").uuid,
+            "hash_rate": Decimal(0.500000000000),
             "date": datetime.date(year=2021, month=1, day=1),
         },
     ]

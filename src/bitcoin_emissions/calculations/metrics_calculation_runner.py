@@ -21,13 +21,15 @@ logger = logging.getLogger(__name__)
 class MetricsCalculationRunner:
 
     @classmethod
-    def calculate_metrics_up_until_today(cls, start_date):
+    def calculate_metrics_for_date_range(cls, start_date, end_date=None):
         date_to_fetch_blocks_for = start_date
         current_date = datetime.today()
+        if end_date is None:
+            end_date = current_date
         rolling_window = deque(maxlen=720)
 
         unknown_pools = set()
-        while date_to_fetch_blocks_for <= current_date:
+        while date_to_fetch_blocks_for <= end_date:
             api_response = cls._get_blocks_for_date(
                 date_to_fetch_blocks_for=date_to_fetch_blocks_for
             )
@@ -215,7 +217,7 @@ class MetricsCalculationRunner:
             server_location_object = Location.objects.get(location_name=location)
             PoolElectricityConsumptionAndCO2EEmissionHistory.objects.create(
                 date=date,
-                electricity_usage=electricity_usage,
+                electricity_usage=electricity_usage / 1000000,
                 co2e_emissions=co2_emissions,
                 location_of_servers=server_location_object
             )

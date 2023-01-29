@@ -118,19 +118,19 @@ def correct_co2_electricity_data():
         {
             "servers_location": "London",
             "date": date(year=2021, month=1, day=1),
-            "electricity_usage": Decimal((240 + 240 + 144) * 1000000).quantize(Decimal("0.00000000001")),
+            "electricity_usage": Decimal(240 + 240 + 144).quantize(Decimal("0.00000000001")),
             "co2e_emissions": Decimal(((240 + 240 + 144) * 1000000 * 0.5) / 1000).quantize(Decimal("0.00000000001")),
         },
         {
             "servers_location": "Cloudflare",
             "date": date(year=2021, month=1, day=1),
-            "electricity_usage": Decimal((240 + 0 + 0) * 1000000).quantize(Decimal("0.00000000001")),
+            "electricity_usage": Decimal(240 + 0 + 0).quantize(Decimal("0.00000000001")),
             "co2e_emissions": Decimal(((240 + 0 + 0) * 1000000 * 0.4) / 1000).quantize(Decimal("0.00000000001")),
         },
         {
             "servers_location": UNKNOWN_POOL_LOCATION,
             "date": date(year=2021, month=1, day=1),
-            "electricity_usage": Decimal((48 + 24) * 1000000).quantize(Decimal("0.00000000001")),
+            "electricity_usage": Decimal(48 + 24).quantize(Decimal("0.00000000001")),
             "co2e_emissions":
                 Decimal(((48 + 24) * 1000000 * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
                 .quantize(Decimal("0.00000000001")),

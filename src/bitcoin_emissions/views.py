@@ -57,47 +57,4 @@ class Co2AndElectricityView(APIView):
             return HttpResponseBadRequest(content="Request failed while fetching the data.")
 
 
-class StartFetchingView(APIView):
-
-    def get(self, request):
-        MetricsCalculationRunner.calculate_metrics_up_until_today(
-            start_date=datetime(year=2021, month=1, day=1)
-        )
-        return Response(data="Data fetching completed successfully!", status=200)
-
-
-class ImportPoolData(APIView):
-
-    def get(self, request):
-        ParseExcelCommand().handle()
-        return Response(data="Pool data import completed successfully!", status=200)
-
-
-class CleanAllTables(APIView):
-
-    def get(self, request):
-        PoolElectricityConsumptionAndCO2EEmissionHistory.objects.all().delete()
-        logger.info("Removed all history")
-        HashRatePerPoolServer.objects.all().delete()
-        logger.info("Removed hash rate per server info")
-        AverageEfficiency.objects.all().delete()
-        logger.info("Removed average efficiency info")
-        NetworkHashRate.objects.all().delete()
-        logger.info("Removed network hash rate info")
-        BlocksFoundByPoolPerWindow.objects.all().delete()
-        logger.info("Removed all window info")
-        PoolLocation.objects.all().delete()
-        logger.info("Removed pool location window info")
-        Location.objects.all().delete()
-        logger.info("Removed location  info")
-        Pool.objects.all().delete()
-        logger.info("Removed pool info")
-        BitcoinDifficulty.objects.all().delete()
-        logger.info("Removed bitcoin difficulty info")
-        MiningGear.objects.all().delete()
-        logger.info("Removed mining gear info")
-        UUIDModel.objects.all().delete()
-        logger.info("Removed UUID info")
-        return Response(data="Data cleanup completed successfully!", status=200)
-
 

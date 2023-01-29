@@ -4,7 +4,7 @@ from datetime import datetime
 from django.db.models import QuerySet
 
 from src.bitcoin_emissions.consts import HOURS_IN_A_DAY, UNKNOWN_CO2_EMISSIONS_FACTOR, TONNE_MULTIPLIER, \
-    UNKNOWN_POOL_LOCATION, UNKNOWN_POOL
+    UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import MiningGear, PoolLocation, AverageEfficiency, Pool, HashRatePerPoolServer, \
     Location
 
@@ -36,7 +36,8 @@ class ElectricityAndCO2Calculator:
         co2_emissions_tco2e_day[UNKNOWN_POOL_LOCATION] = 0
 
         # TODO: remove logic for counting hashrate per server to other module; S from SOLID!
-        unknown_and_unrecognized_servers_hash_rate = 0
+        unknown_servers_hash_rate = 0
+        unrecognized_servers_hash_rate = 0
 
         """
             Calculate location electricity usage and CO2 emissions by going through all pools 
@@ -51,11 +52,6 @@ class ElectricityAndCO2Calculator:
                 return pool_servers.count() == 0
 
             if pool_is_unknown(pool_servers):
-                """
-                    Since we put all pools that we do not have info about and blocks mined 
-                    by "unknown" individuals in the same bucket, 
-                    it would make sense to assume that all of them use one virtual "megaserver" 
-                """
                 electricity_consumption_for_pool = \
                     cls.get_electricity_usage(
                         average_gear_efficiency_j_gh=average_gear_efficiency_j_gh,
@@ -69,8 +65,8 @@ class ElectricityAndCO2Calculator:
                         electricity_consumption_for_server=electricity_consumption_for_pool,
                         emissions_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
                     )
-                logger.info(f"No info about pool f{pool_name}; adding {pool_hash_rate_eh_s} to unknown sources")
-                unknown_and_unrecognized_servers_hash_rate += pool_hash_rate_eh_s
+                logger.info(f"No info about pool {pool_name}; adding {pool_hash_rate_eh_s} to unrecognized sources")
+                unrecognized_servers_hash_rate += pool_hash_rate_eh_s
 
             pool_object = Pool.objects.filter(pool_name=pool_name)
 
@@ -96,7 +92,7 @@ class ElectricityAndCO2Calculator:
                                 f"at {pool_server_location} on {calculation_date}: "
                                 f"{pool_hash_rate_eh_s / pool_servers.count()}")
                 else:
-                    unknown_and_unrecognized_servers_hash_rate += pool_hash_rate_eh_s
+                    unknown_servers_hash_rate += pool_hash_rate_eh_s
 
                 if electricity_consumption_kwh_day.get(pool_server_location) is None:
                     electricity_consumption_kwh_day[pool_server_location] = 0
@@ -121,12 +117,21 @@ class ElectricityAndCO2Calculator:
         HashRatePerPoolServer.objects.create(
             blockchain_pool=Pool.objects.get(pool_name=UNKNOWN_POOL),
             blockchain_pool_location=Location.objects.get(location_name=UNKNOWN_POOL_LOCATION),
-            hash_rate=unknown_and_unrecognized_servers_hash_rate,
+            hash_rate=unknown_servers_hash_rate,
             date=calculation_date
         )
         logger.info(f"Saved hash rate information for unknown servers "
                     f"on {calculation_date}: "
-                    f"{unknown_and_unrecognized_servers_hash_rate}")
+                    f"{unknown_servers_hash_rate}")
+        HashRatePerPoolServer.objects.create(
+            blockchain_pool=Pool.objects.get(pool_name=UNRECOGNIZED_POOL),
+            blockchain_pool_location=Location.objects.get(location_name=UNKNOWN_POOL_LOCATION),
+            hash_rate=unrecognized_servers_hash_rate,
+            date=calculation_date
+        )
+        logger.info(f"Saved hash rate information for unrecognized servers "
+                    f"on {calculation_date}: "
+                    f"{unrecognized_servers_hash_rate}")
 
         return electricity_consumption_kwh_day, co2_emissions_tco2e_day
 
