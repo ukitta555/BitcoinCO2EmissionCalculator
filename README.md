@@ -1,5 +1,5 @@
 <h1> Bitcoin Emissions CO2 API</h1>
-<h2> Discalimer </h2>
+<h2> Disclaimer </h2>
 <p> 
     Although the author of this README tried to make this tutorial as
     detailed as possible, please feel free to reach out in case something does
