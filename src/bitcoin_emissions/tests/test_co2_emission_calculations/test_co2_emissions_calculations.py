@@ -15,7 +15,7 @@ class TestCO2EmissionsCalculation:
             mock_hash_rate_data,
             mock_pool_servers,
     ):
-        _, result_2021_01_01 = ElectricityAndCO2Calculator.calculate(
+        _, result_2021_01_01, _ = ElectricityAndCO2Calculator.calculate(
             pool_hash_rates=mock_hash_rate_data,
             calculation_date=datetime(year=2021, month=1, day=1)
         )
@@ -36,7 +36,7 @@ class TestCO2EmissionsCalculation:
             mock_hash_rate_data,
             mock_pool_servers,
     ):
-        _, result_2021_01_06 = ElectricityAndCO2Calculator.calculate(
+        _, result_2021_01_06, _ = ElectricityAndCO2Calculator.calculate(
             pool_hash_rates=mock_hash_rate_data,
             calculation_date=datetime(year=2021, month=1, day=6)
         )

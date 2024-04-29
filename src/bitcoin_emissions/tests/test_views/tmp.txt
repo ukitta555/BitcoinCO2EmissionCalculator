@@ -1,0 +1,50 @@
+E           AssertionError: assert frozenset({('date', '2021-01-01'), ('servers_at_locations', frozenset({frozenset({('co2e_emissions', '4.000000'), ('longitude', 1.0), ('is_cloudflare', True), ('electricity_usage', '3.000000'), ('latitude', 1.0), ('location_name', 'Cloudflare')}), frozenset({('longitude', 0.0), ('electricity_usage', '0.500000'), ('is_cloudflare', False), ('co2e_emissions', '0.500000'), ('location_name', 'London'), ('latitude', 0.0)})})), ('blockchain_pool_name', 'F2Pool')}) == frozenset({('date', '2021-01-01'), ('blockchain_pool_name', 'Pools with no server info'), ('servers_at_locations', frozenset({frozenset({('co2e_emissions', 3.0), ('electricity_usage', 2.5), ('latitude', Decimal('40.52748299999999659348759450949728488922119140625')), ('location_name', 'Unknown location'), ('is_cloudflare', False), ('longitude', Decimal('-38.19314399999999665169525542296469211578369140625'))})}))})
+E             Extra items in the left set:
+E             ('servers_at_locations', frozenset({frozenset({('co2e_emissions', '4.000000'), ('electricity_usage', '3.000000'), ('is..._usage', '0.500000'), ('is_cloudflare', False), ('latitude', 0.0), ('location_name', 'London'), ('longitude', 0.0)})}))
+E             ('blockchain_pool_name', 'F2Pool')
+E             Extra items in the right set:
+E             ('blockchain_pool_name', 'Pools with no server info')
+E             ('servers_at_locations', frozenset({frozenset({('co2e_emissions', 3.0), ('electricity_usage', 2.5), ('is_cloudflare', ...location_name', 'Unknown location'), ('longitude', Decimal('-38.19314399999999665169525542296469211578369140625'))})}))
+E             Full diff:
+E               frozenset({('blockchain_pool_name',
+E             -             'Pools with no server info'),
+E             +             'F2Pool'),
+E                          ('date',
+E                           '2021-01-01'),
+E                          ('servers_at_locations',
+E                           frozenset({frozenset({('co2e_emissions',
+E             -                                    3.0),
+E             ?                                    ^
+E             +                                    '4.000000'),
+E             ?                                    ^^  ++++++
+E                                                 ('electricity_usage',
+E             +                                    '3.000000'),
+E             +                                   ('is_cloudflare',
+E             +                                    True),
+E             +                                   ('latitude',
+E             -                                    2.5),
+E             ?                                    ^ ^
+E             +                                    1.0),
+E             ?                                    ^ ^
+E             +                                   ('location_name',
+E             +                                    'Cloudflare'),
+E             +                                   ('longitude',
+E             +                                    1.0)}),
+E             +                        frozenset({('co2e_emissions',
+E             +                                    '0.500000'),
+E             +                                   ('electricity_usage',
+E             +                                    '0.500000'),
+E                                                 ('is_cloudflare',
+E                                                  False),
+E                                                 ('latitude',
+E             -                                    Decimal('40.52748299999999659348759450949728488922119140625')),
+E             +                                    0.0),
+E                                                 ('location_name',
+E             -                                    'Unknown location'),
+E             ?                                     ^ ^^^^^^^^^^^^
+E             +                                    'London'),
+E             ?                                     ^^ ^
+E                                                 ('longitude',
+E             -                                    Decimal('-38.19314399999999665169525542296469211578369140625'))})}))},
+E             +                                    0.0)})}))},
+E               )

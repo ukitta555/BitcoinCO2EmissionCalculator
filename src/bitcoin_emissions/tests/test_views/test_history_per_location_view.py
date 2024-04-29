@@ -8,8 +8,7 @@ from src.bitcoin_emissions.consts import UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, UN
 
 pytestmark = pytest.mark.django_db
 
-
-class TestHistoryView:
+class TestHistoryPerLocationView:
 
     def test_history_endpoint(
             self,
@@ -24,7 +23,6 @@ class TestHistoryView:
             },
             format='json'
         )
-
         assert json.loads(api_response.content) == [
             {
                 "co2e_emissions": 2.0,
@@ -38,15 +36,21 @@ class TestHistoryView:
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": "F2Pool",
-                        "hash_rate": 5.0
+                        "hash_rate": 5.0,
+                        "co2e_emissions": 0.5,
+                        "electricity_usage": 0.5,
                     },
                     {
                         "blockchain_pool_name": "QueenPool",
-                        "hash_rate": 5.0
+                        "hash_rate": 5.0,
+                        "co2e_emissions": 0.5,
+                        "electricity_usage": 0.5,
                     },
                     {
                         "blockchain_pool_name": "City17",
-                        "hash_rate": 3.0
+                        "hash_rate": 3.0,
+                        "co2e_emissions": 1,
+                        "electricity_usage": 0,
                     },
                 ],
                 "is_cloudflare": False,
@@ -61,12 +65,14 @@ class TestHistoryView:
                 "location_of_servers": {
                         "longitude": "1.000000",
                         "latitude": "1.000000",
-                        "location_name": "Cloudflare",
+                        "location_name": "Cloudflare"
                 },
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": "F2Pool",
-                        "hash_rate": 5.0
+                        "hash_rate": 5.0,
+                        "co2e_emissions": 4.0,
+                        "electricity_usage": 3.0,
                     }
                 ],
                 "is_cloudflare": True,
@@ -86,11 +92,15 @@ class TestHistoryView:
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": UNKNOWN_POOL,
-                        "hash_rate": 1.0
+                        "hash_rate": 1.0,
+                        "co2e_emissions": 3,
+                        "electricity_usage": 2.5,
                     },
                     {
                         "blockchain_pool_name": UNRECOGNIZED_POOL,
-                        "hash_rate": 1.0
+                        "hash_rate": 1.0,
+                        "co2e_emissions": 3,
+                        "electricity_usage": 2.5,
                     },
                 ],
                 "is_cloudflare": False,

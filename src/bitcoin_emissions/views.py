@@ -5,12 +5,9 @@ from django.http import HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from src.bitcoin_emissions.calculations.metrics_calculation_runner import MetricsCalculationRunner
-from src.bitcoin_emissions.management.commands.parse_excel_data import Command as ParseExcelCommand
-from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory, Pool, Location, PoolLocation, \
-    BitcoinDifficulty, MiningGear, BlocksFoundByPoolPerWindow, AverageEfficiency, HashRatePerPoolServer, NetworkHashRate
-from src.bitcoin_emissions.models.uuid_base_db_model import UUIDModel
-from src.bitcoin_emissions.serializers import EmissionSerializer
+from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory
+from src.bitcoin_emissions.models import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.serializers import EmissionSerializer, EmissionSerializerPerPool
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +23,41 @@ DONE 6. The pool hashrate related to each entry ie. at the level of each server 
 attach to each foreign key the hashrate value for tuple (pool, location)
 """
 
+class Co2AndElectricityPerPoolView(APIView):
+    
+    # TODO: think whether we should limit the dates for which we fetch data
+    # so that we can avoid querying the thing with too large of a request (most likely yes)
+    def get(self, request):
+        try:
+            start_date = datetime.strptime(request.GET.get('start', '2021-01-01'), '%Y-%m-%d')
+            end_date = datetime.strptime(request.GET.get('end', '2021-01-01'), '%Y-%m-%d')
+            if not datetime(year=2021, month=1, day=1) <= start_date <= end_date <= datetime.today():
+                raise Exception
+        except Exception as e:
+            return HttpResponseBadRequest(
+                content="Bad request, please check "
+                        "whether you provided dates in a correct "
+                        "format (YYYY-MM-DD)"
+            )
 
-class Co2AndElectricityView(APIView):
+        try:   
+            # TODO: fill in the logic for the pool view
+            result = CO2ElectricityHistoryPerServer\
+                .objects\
+                .get_history_for_range_with_unique_date_and_pool_name(
+                    start_date=start_date,
+                    end_date=end_date
+                )
+            for obj in result:
+                logger.info(obj)
+            serializer = EmissionSerializerPerPool(result, many = True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.exception(e)
+            return HttpResponseBadRequest(content="Request failed while fetching the data.")
+
+
+class Co2AndElectricityPerLocationView(APIView):
 
     def get(self, request):
         try:
@@ -49,7 +79,7 @@ class Co2AndElectricityView(APIView):
                     start_date=start_date,
                     end_date=end_date
                 )
-
+            # logger.info(start_date, end_date)
             serializer = EmissionSerializer(result, many=True)
             return Response(serializer.data)
         except Exception as e:

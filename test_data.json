@@ -1,0 +1,128 @@
+// 1. add an API endpoint that will show electricity / co2 per pool all around the world.
+// Expected endpoint: {BASE_URL}/calculator/co2_and_electricity_per_pool/?start=2024-03-26&end=2024-03-28
+
+
+// collect unique date + pool combinations in CO2ElectricityHistoryPerServer model..
+// make a query to CO2ElectricityHistoryPerServer based on date + pool (don't care about the location, need only 1 object per date + pool pair); 
+// for each date + pool pair...
+[
+....,
+
+{
+    "date": "2024-03-27", // get from the current queryset entry
+    "electricity_usage": 241.051854, // sum query over the CO2ElectricityHistoryPerServer queryset (query by date + pool, include all locations found) 
+    "co2e_emissions": 124059.473282, // sum query over the CO2ElectricityHistoryPerServer queryset (query by date + pool, include all locations found)
+    "blockchain_pool_name": "AntPool", // get from the current queryset entry 
+    // for all CO2ElectricityHistoryPerServer in the (date + pool + all locations) queryset, display the location and the info for this specific server
+    "servers_at_locations": [
+        {
+            "longitude": "4.899980",
+            "latitude": "52.378502",
+            "location_name": "Amsterdam, Netherlands",
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321,
+            "is_cloudflare": true, // copy paste from previous serializer; can get from the server object of the CO2ElectricityHistoryPerServer instance
+        },
+        {
+            "longitude": "4.899980",
+            "latitude": "52.378502",
+            "location_name": "Amsterdam, Netherlands",
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321,
+            "is_cloudflare": true, // copy paste from previous serializer; can get from the server object of the CO2ElectricityHistoryPerServer instance
+        },
+        {
+            "longitude": "-46.637300",
+            "latitude": "-23.547400",
+            "location_name": "Brazil,Sao Paulo,Sao Paulo",
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321,
+            "is_cloudflare": true, // copy paste from previous serializer; can get from the server object of the CO2ElectricityHistoryPerServer instance
+        },
+        ...
+    ]
+},
+.....
+]
+
+
+[
+....,
+{
+    "date": "2024-03-27",
+    "electricity_usage": 241.051854,
+    "co2e_emissions": 124059.473282,
+    "location_of_servers": {
+        "longitude": "-37.762002",
+        "latitude": "39.274589",
+        "location_name": "Cloudflare"
+    },
+    "servers_at_location": [
+        {
+            "blockchain_pool_name": "AntPool", 
+            "hash_rate": 46.460217176538,
+            "electricity_usage": 123321.123321, // add electricity per each server at the location.
+            "co2e_emissions": 123321.123321 // add co2 per each server at the location.
+        },
+        {
+            "blockchain_pool_name": "AntPool",
+            "hash_rate": 46.460217176538,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "AntPool",
+            "hash_rate": 46.460217176538,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "Binance Pool",
+            "hash_rate": 4.339996335054,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "Binance Pool",
+            "hash_rate": 4.339996335054,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "F2Pool",
+            "hash_rate": 79.288394582714,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "Poolin",
+            "hash_rate": 2.782048932727,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "Poolin",
+            "hash_rate": 2.782048932727,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "ViaBTC",
+            "hash_rate": 43.817270690447,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        },
+        {
+            "blockchain_pool_name": "ViaBTC",
+            "hash_rate": 43.817270690447,
+            "electricity_usage": 123321.123321,
+            "co2e_emissions": 123321.123321
+        }
+    ],
+    "is_cloudflare": true,
+    "averaged_difficulty": 83947913181361.0,
+    "network_hash_rate_720_block_window": 600.922569468988,
+    "averaged_gear_efficiency": 0.031333333333
+},
+....
+]

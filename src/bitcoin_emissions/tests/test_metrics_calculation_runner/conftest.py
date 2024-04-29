@@ -5,7 +5,7 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.consts import UNKNOWN_POOL, UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION
+from src.bitcoin_emissions.consts import GIGA_MULTIPLIER, KWH_MULTIPLIER, KWH_TO_GWH_MULTIPLIER, UNKNOWN_POOL, UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION, UNRECOGNIZED_POOL
 
 
 @pytest.fixture
@@ -134,5 +134,98 @@ def correct_co2_electricity_data():
             "co2e_emissions":
                 Decimal(((48 + 24) * 1000000 * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
                 .quantize(Decimal("0.00000000001")),
+        },
+    ]
+
+
+@pytest.fixture
+def mock_granural_data():
+    return {
+        "F2Pool": [
+            {
+                "server_location": "London",
+                "co2_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.5) / 1000).quantize(Decimal("0.00000000001")),
+                "electricity": Decimal(240 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001")),
+            },
+            {
+                "server_location": "Cloudflare",
+                "co2_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.4) / 1000).quantize(Decimal("0.00000000001")),
+                "electricity": Decimal(240 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001")),
+            }
+        ],
+        "QueenPool": [
+            {
+                "server_location": "London",
+                "co2_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.5) / 1000).quantize(Decimal("0.00000000001")),
+                "electricity": Decimal(240 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
+            }
+        ],
+        "City17": [
+            {
+                "server_location": "London",
+                "co2_emissions": Decimal((144 * GIGA_MULTIPLIER * 0.5) / 1000).quantize(Decimal("0.00000000001")),
+                "electricity": Decimal(144 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
+            }
+        ],
+        UNKNOWN_POOL: [
+            {
+                "server_location": UNKNOWN_POOL_LOCATION,
+                "co2_emissions": Decimal((48 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000001")),
+                "electricity": Decimal(48 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
+            }
+        ],
+        UNRECOGNIZED_POOL: [
+            {
+                "server_location": UNKNOWN_POOL_LOCATION,
+                "co2_emissions": Decimal((24 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000000000000000001")),
+                "electricity": Decimal(24 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
+            }
+        ],
+    }
+
+#     date = models.DateField()
+#     electricity_usage = models.DecimalField(max_digits=24, decimal_places=6)
+#     co2e_emissions = models.DecimalField(max_digits=24, decimal_places=6)
+#     server_info = models.ForeignKey(PoolLocation, on_delete=models.CASCADE)
+#     objects = CO2ElectricityHistoryPerServerManager()
+
+@pytest.fixture
+def correct_granural_data():
+    return [
+        {
+            "_server_info": "F2Pool",
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.5) / 1000),
+            "electricity_usage": Decimal(240 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER,
+        },
+        {
+            "_server_info": "F2Pool",
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.4) / 1000),
+            "electricity_usage": Decimal(240 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER,
+        },
+        {
+            "_server_info": "QueenPool",
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((240 * GIGA_MULTIPLIER * 0.5) / 1000),
+            "electricity_usage": Decimal(240 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER
+        },
+        {
+            "_server_info": "City17",
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((144 * GIGA_MULTIPLIER * 0.5) / 1000),
+            "electricity_usage": Decimal(144 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER
+        },
+        {
+            "_server_info": UNRECOGNIZED_POOL,
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((24 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000001")),
+            "electricity_usage": Decimal(24 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER
+        },
+        {
+            "_server_info": UNKNOWN_POOL,
+            "date": date(year=2021, month=1, day=1),
+            "co2e_emissions": Decimal((48 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000001")),
+            "electricity_usage": Decimal(48 * GIGA_MULTIPLIER) / KWH_TO_GWH_MULTIPLIER
         },
     ]

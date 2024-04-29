@@ -4,10 +4,11 @@ from decimal import Decimal
 
 import pytest
 
-from src.bitcoin_emissions.consts import UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, \
+from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, UNKNOWN_CO2_EMISSIONS_FACTOR, UNKNOWN_POOL_LOCATION, UNKNOWN_POOL, \
     UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import Pool, Location, PoolLocation, HashRatePerPoolServer, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, MiningGear, NetworkHashRate, BitcoinDifficulty, AverageEfficiency
+from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
 
 
 @pytest.fixture
@@ -119,7 +120,7 @@ def mock_pool_servers(
     unrecognized_pool = Pool.objects.create(pool_name=UNRECOGNIZED_POOL)
 
     london = Location.objects.create(location_name="London", longitude=0, latitude=0)
-    cloudflare = Location.objects.create(location_name="Cloudflare", longitude=1, latitude=1)
+    cloudflare = Location.objects.create(location_name=CLOUDFLARE_LOCATION_DATA[0], longitude=1, latitude=1)
     neverland = Location.objects.create(location_name="Neverland", longitude=2, latitude=2)
     unknown_loc = Location.objects.create(location_name=UNKNOWN_POOL_LOCATION, longitude=3, latitude=3)
 
@@ -278,4 +279,41 @@ def mock_history(mock_pool_servers):
         electricity_usage=5,
         co2e_emissions=6,
         location_of_servers=mock_pool_servers.get("locations").get("unknown_loc")
+    )
+
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=3,
+        co2e_emissions=4,
+        server_info=mock_pool_servers.get("pool_locations").get("f2pool_seattle_2021_01_01")
+    )
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=0.5,
+        co2e_emissions=0.5,
+        server_info=mock_pool_servers.get("pool_locations").get("f2pool_london_2021_01_01")
+    )
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=0.5,
+        co2e_emissions=0.5,
+        server_info=mock_pool_servers.get("pool_locations").get("queenpool_london_2021_01_01")
+    )
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=0,
+        co2e_emissions=1,
+        server_info=mock_pool_servers.get("pool_locations").get("city17_london_2021_01_01")
+    )
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=2.5,
+        co2e_emissions=3,
+        server_info=mock_pool_servers.get("pool_locations").get("unknown_2021_01_01")
+    )
+    CO2ElectricityHistoryPerServer.objects.create(
+        date=datetime(year=2021, month=1, day=1),
+        electricity_usage=2.5,
+        co2e_emissions=3,
+        server_info=mock_pool_servers.get("pool_locations").get("unrecognized_2021_01_01")
     )

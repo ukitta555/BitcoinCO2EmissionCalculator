@@ -16,11 +16,11 @@ class TestIntermediateInfoSaving:
             mock_hash_rate_data,
             mock_pool_servers,
     ):
-        result_2021_01_01, _ = ElectricityAndCO2Calculator.calculate(
+        result_2021_01_01, _, __ = ElectricityAndCO2Calculator.calculate(
             pool_hash_rates=mock_hash_rate_data,
             calculation_date=datetime(year=2021, month=1, day=1),
         )
-        result_2021_01_06, _ = ElectricityAndCO2Calculator.calculate(
+        result_2021_01_06, _, __ = ElectricityAndCO2Calculator.calculate(
             pool_hash_rates=mock_hash_rate_data,
             calculation_date=datetime(year=2021, month=1, day=6),
         )
@@ -39,7 +39,7 @@ class TestIntermediateInfoSaving:
             mock_hash_rate_data,
             correct_server_hash_rate_objects,
     ):
-        result_2021_01_01, _ = ElectricityAndCO2Calculator.calculate(
+        result_2021_01_01, _, __ = ElectricityAndCO2Calculator.calculate(
             pool_hash_rates=mock_hash_rate_data,
             calculation_date=datetime(year=2021, month=1, day=1),
         )

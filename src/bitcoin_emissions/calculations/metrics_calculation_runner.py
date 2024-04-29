@@ -2,6 +2,7 @@ import logging
 from collections import deque
 from datetime import datetime, timedelta
 from fractions import Fraction
+import time
 
 import pandas as pd
 import requests
@@ -10,9 +11,11 @@ from django.core import exceptions
 from src.bitcoin_emissions.calculations.helper_calculators.electicity_and_co2_usage_calculator \
     import ElectricityAndCO2Calculator
 from src.bitcoin_emissions.calculations.helper_calculators.hashrate_calculator import HashRateCalculator
-from src.bitcoin_emissions.consts import UNKNOWN_POOL
+from src.bitcoin_emissions.consts import KWH_TO_GWH_MULTIPLIER, UNKNOWN_POOL
 from src.bitcoin_emissions.models import BlocksFoundByPoolPerWindow, Pool, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, Location
+from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.pool_locations_db_model import PoolLocation
 
 
 logger = logging.getLogger(__name__)
@@ -87,7 +90,7 @@ class MetricsCalculationRunner:
                 rolling_window=rolling_window,
                 date=date_to_fetch_blocks_for
             )
-            electricity, co2_emissions = ElectricityAndCO2Calculator.calculate(
+            electricity, co2_emissions, granural_emissions = ElectricityAndCO2Calculator.calculate(
                 pool_hash_rates=hash_rates,
                 calculation_date=date_to_fetch_blocks_for
             )
@@ -95,6 +98,7 @@ class MetricsCalculationRunner:
                 date=date_to_fetch_blocks_for,
                 co2_data=co2_emissions,
                 electricity_data=electricity,
+                granural_data=granural_emissions
             )
             logger.info(f"Sum of co2e emissions for date {date_to_fetch_blocks_for}:"
                   f" {sum([i for i in co2_emissions.values()])}"
@@ -128,16 +132,23 @@ class MetricsCalculationRunner:
                     )
                 ]
             )
-            api_response = requests.get(
-                f"https://chain.api.btc.com/v3/block/{blocks_to_fetch}",
-                headers={"content-type": "application/json"}
-            ).json()
+            api_response = {'data': None}
+
+            while api_response['data'] is None:
+                logger.info(f"Trying to fetch information about next 50 blocks...")
+                api_response = requests.get(
+                    f"https://chain.api.btc.com/v3/block/{blocks_to_fetch}",
+                    headers={"content-type": "application/json"}
+                ).json()
+                if api_response.get('err_no') == 500 or api_response['data'] is None:
+                    logger.info(f"API error, error code: {api_response.get('err_no')}, data returned: {api_response.get('data')}")
+
             logger.info(
-                f"Fetched info for blocks ("
-                f"{api_response['data'][0]['height']}, "
-                f"{api_response['data'][-1]['height']}) "
-                f"to fill the rolling window to 720 elements"
-            )
+                    f"Fetched info for blocks ("
+                    f"{api_response['data'][0]['height']}, "
+                    f"{api_response['data'][-1]['height']}) "
+                    f"to fill the rolling window to 720 elements"
+                )
             result.extend(api_response["data"])
         return result
 
@@ -167,7 +178,7 @@ class MetricsCalculationRunner:
         return True
 
     @classmethod
-    def _save_info_about_rolling_window(cls, rolling_window, end_date, unknown_pools):
+    def _save_info_about_rolling_window(cls, rolling_window: deque, end_date, unknown_pools: set):
         rolling_window_df = pd.DataFrame(rolling_window)
         block_found_by_each_pool = rolling_window_df.groupby("pool_name").size()
         unknown_blocks = 0
@@ -210,14 +221,30 @@ class MetricsCalculationRunner:
             cls,
             date,
             electricity_data,
-            co2_data
+            co2_data,
+            granural_data
         ):
         for location, co2_emissions in co2_data.items():
             electricity_usage = electricity_data[location]
             server_location_object = Location.objects.get(location_name=location)
             PoolElectricityConsumptionAndCO2EEmissionHistory.objects.create(
                 date=date,
-                electricity_usage=electricity_usage / 1000000,
+                electricity_usage=electricity_usage / KWH_TO_GWH_MULTIPLIER,
                 co2e_emissions=co2_emissions,
                 location_of_servers=server_location_object
             )
+
+        for pool, server_emissions in granural_data.items():
+            for servers_emission_record in server_emissions:
+                server = PoolLocation.objects.filter(
+                    blockchain_pool__pool_name=pool, 
+                    blockchain_pool_location__location_name = servers_emission_record['server_location'],
+                    # date__lte=date
+                )[0]
+                # print(server)
+                CO2ElectricityHistoryPerServer.objects.create(
+                    date=date,
+                    electricity_usage=servers_emission_record['electricity'] / KWH_TO_GWH_MULTIPLIER,
+                    co2e_emissions=servers_emission_record['co2_emissions'],
+                    server_info=server
+                )
