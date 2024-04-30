@@ -8,7 +8,7 @@ from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, UNKNOWN_CO2_E
     UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import Pool, Location, PoolLocation, HashRatePerPoolServer, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, MiningGear, NetworkHashRate, BitcoinDifficulty, AverageEfficiency
-from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 
 
 @pytest.fixture

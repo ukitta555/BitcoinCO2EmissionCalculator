@@ -14,7 +14,7 @@ from src.bitcoin_emissions.calculations.helper_calculators.hashrate_calculator i
 from src.bitcoin_emissions.consts import KWH_TO_GWH_MULTIPLIER, UNKNOWN_POOL
 from src.bitcoin_emissions.models import BlocksFoundByPoolPerWindow, Pool, \
     PoolElectricityConsumptionAndCO2EEmissionHistory, Location
-from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 from src.bitcoin_emissions.models.pool_locations_db_model import PoolLocation
 
 

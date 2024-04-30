@@ -16,8 +16,14 @@ class ElectricityConsumptionAndCO2EEmissionHistoryManager(models.Manager):
 
 
 class PoolElectricityConsumptionAndCO2EEmissionHistory(UUIDModel):
+    class Meta:
+        verbose_name_plural = "Emissions history per location"
+
     date = models.DateField()
     electricity_usage = models.DecimalField(max_digits=24, decimal_places=6)
     co2e_emissions = models.DecimalField(max_digits=24, decimal_places=6)
     location_of_servers = models.ForeignKey(Location, on_delete=models.CASCADE)
     objects = ElectricityConsumptionAndCO2EEmissionHistoryManager()
+
+    def __str__(self) -> str:
+        return f"Location emissions history: {self.date}, {self.location_of_servers.location_name}"

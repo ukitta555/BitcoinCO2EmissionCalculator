@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <div>
+        If any of the dates are not specified, the unspecified dates will default to 2021-01-01.
+        Both the start date and the end date are inclusive.
+        <form action="." method="POST">
+            {{ form.as_p }}
+            {% csrf_token %}
+
+                <!-- <input type="date" id="start">
+                <input type="date" id="end"> -->
+                <button type="submit">Start calculations!</button>
+        </form>
+    </div>
+    <br />
+
+{% endblock %}

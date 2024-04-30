@@ -6,7 +6,7 @@ from django.db.models import Sum
 from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory, Location, \
     HashRatePerPoolServer, AverageEfficiency, BitcoinDifficulty, NetworkHashRate
-from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 
 
 class ServerHashrateSerializer(serializers.ModelSerializer):

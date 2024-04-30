@@ -5,11 +5,20 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Python Debugger: Django",
+        "name": "Python Debugger: Start block fetching",
         "type": "debugpy",
         "request": "launch",
         "program": "${workspaceFolder}/manage.py",
         "args": ["start_block_fetching"],
+        "django": true,
+        "justMyCode": false
+      },
+      {
+        "name": "Python Debugger: Run server",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/manage.py",
+        "args": ["runserver"],
         "django": true,
         "justMyCode": false
       },

@@ -9,4 +9,4 @@ from .blocks_found_by_pool_per_window_db_model import BlocksFoundByPoolPerWindow
 from .network_hashrate_db_model import NetworkHashRate
 from .average_efficiency_db_model import AverageEfficiency
 from .hashrate_per_pool_server_db_model import HashRatePerPoolServer
-from .co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from .co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer

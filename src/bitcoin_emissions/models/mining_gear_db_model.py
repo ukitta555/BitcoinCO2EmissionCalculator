@@ -12,7 +12,7 @@ class MiningGearManager(models.Manager):
                 map(
                     lambda x: x.efficiency,
                     self.filter(release_date__lte=date)
-                    .order_by("-release_date")[:3]
+                    .order_by("-release_date")[:3] # asssuming the database always has at least 3 entries for every date
                 )
             )
         )

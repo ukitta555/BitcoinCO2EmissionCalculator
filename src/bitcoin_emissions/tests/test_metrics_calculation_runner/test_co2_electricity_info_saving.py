@@ -5,7 +5,7 @@ from django.db.models import F
 
 from src.bitcoin_emissions.calculations.metrics_calculation_runner import MetricsCalculationRunner
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory
-from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 from src.bitcoin_emissions.tests.test_metrics_calculation_runner.conftest import correct_co2_electricity_data
 
 pytestmark = pytest.mark.django_db

@@ -48,8 +48,6 @@ class Co2AndElectricityPerPoolView(APIView):
                     start_date=start_date,
                     end_date=end_date
                 )
-            for obj in result:
-                logger.info(obj)
             serializer = EmissionSerializerPerPool(result, many = True)
             return Response(serializer.data)
         except Exception as e:

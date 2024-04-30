@@ -3,7 +3,7 @@ from django.core.management import BaseCommand
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory, HashRatePerPoolServer, \
     AverageEfficiency, NetworkHashRate, BlocksFoundByPoolPerWindow, PoolLocation, Location, Pool, BitcoinDifficulty, \
     MiningGear
-from src.bitcoin_emissions.models.co2_electricity_history_per_server import CO2ElectricityHistoryPerServer
+from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 from src.bitcoin_emissions.models.uuid_base_db_model import UUIDModel
 from src.bitcoin_emissions.views import logger
 
@@ -11,9 +11,9 @@ from src.bitcoin_emissions.views import logger
 class Command(BaseCommand):
     def handle(self, **options):
         PoolElectricityConsumptionAndCO2EEmissionHistory.objects.all().delete()
-        logger.info("Removed all history")
+        logger.info("Removed all location emission history")
         CO2ElectricityHistoryPerServer.objects.all().delete()
-        logger.info("Removed all granural server data")
+        logger.info("Removed all pool emission history")
         HashRatePerPoolServer.objects.all().delete()
         logger.info("Removed hash rate per server info")
         AverageEfficiency.objects.all().delete()

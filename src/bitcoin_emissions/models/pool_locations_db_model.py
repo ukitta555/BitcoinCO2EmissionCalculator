@@ -19,6 +19,10 @@ class PoolLocationManager(models.Manager):
 
 
 class PoolLocation(UUIDModel):
+    class Meta:
+        verbose_name_plural = "Servers (Location + Pool combinations)"
+
+
     blockchain_pool = models.ForeignKey(Pool, on_delete=models.CASCADE)
     blockchain_pool_location = models.ForeignKey(Location, on_delete=models.CASCADE)
     valid_for_date = models.DateField()
@@ -26,4 +30,5 @@ class PoolLocation(UUIDModel):
     information_source = models.CharField(max_length=100)
     objects = PoolLocationManager()
 
-
+    def __str__(self):
+        return f"Server: valid for {self.valid_for_date}, pool {self.blockchain_pool.pool_name}, location {self.blockchain_pool_location.location_name}"

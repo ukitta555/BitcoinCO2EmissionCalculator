@@ -1,0 +1,21 @@
+
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    <a href="clear_all_data/">Remove all data from the database (DANGER ZONE)</a>
+    <br />
+    ------------------------------------------
+    <br />
+    ------------------------------------------
+    <br />
+    ------------------------------------------
+    <br />
+    ------------------------------------------
+    <br />
+    <a href="calculate_emissions/">Calculate emissions for specific date range</a>
+    {{ block.super }}
+{% endblock %}
+
+
+
+  
