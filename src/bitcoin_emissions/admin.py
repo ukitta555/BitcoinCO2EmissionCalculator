@@ -1,4 +1,5 @@
 import csv
+from django.views.decorators.csrf import csrf_protect
 from datetime import datetime
 from venv import logger
 from django import forms
@@ -85,6 +86,7 @@ class LocationEmissionHistoryAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
+    @csrf_protect
     def calculate_emissions(self, request):
         if request.method == "POST":
             start_date = datetime.strptime(request.POST.get('start_date', '2021-01-01'), '%Y-%m-%d')
@@ -119,6 +121,7 @@ class LocationEmissionHistoryAdmin(admin.ModelAdmin):
             request, "admin/date_range_emission_calc_form.html", payload
         )
 
+    @csrf_protect
     def clear_all_data(self, request):
         PoolElectricityConsumptionAndCO2EEmissionHistory.objects.all().delete()
         logger.info("Removed all location emission history")
@@ -170,6 +173,7 @@ class PoolLocationAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
+    @csrf_protect
     def import_excel(self, request):
         if request.method == "POST":
             excel_file = request.FILES["excel_file"]

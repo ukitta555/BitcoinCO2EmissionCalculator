@@ -2,8 +2,7 @@
 
 {% block content %}
     <div>
-        If any of the dates are not specified, the unspecified dates will default to 2021-01-01.
-        Both the start date and the end date are inclusive.
+        Both the start date and the end date are inclusive. Please use 2021-01-01 as a minimum start date (no data about pool servers before that) and yesterday as a maximum end date (not all blocks have been mined so far).
         <form action="." method="POST">
             {{ form.as_p }}
             {% csrf_token %}
