@@ -21,7 +21,7 @@ numpy==1.26.4
 openpyxl==3.0.10
 openpyxl-stubs==0.1.24
 packaging==22.0
-pandas==1.5.2
+pandas
 pluggy==1.0.0
 psycopg2-binary
 pymongo==4.3.3
