@@ -93,7 +93,7 @@ class LocationEmissionHistoryAdmin(admin.ModelAdmin):
             logger.info(f"Start date {start_date}: ")
             PoolElectricityConsumptionAndCO2EEmissionHistory.objects.filter(date=start_date).delete()
             logger.info("Removed location history info")
-            CO2ElectricityHistoryPerServer.objects.all().delete()
+            CO2ElectricityHistoryPerServer.objects.filter(date=start_date).delete()
             logger.info("Removed pool history info")
             HashRatePerPoolServer.objects.filter(date=start_date).delete()
             logger.info("Removed hash rate per server info")
