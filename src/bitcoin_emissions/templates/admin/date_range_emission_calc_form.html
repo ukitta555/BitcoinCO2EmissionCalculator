@@ -2,7 +2,7 @@
 
 {% block content %}
     <div>
-        Both the start date and the end date are inclusive. Please use 2021-01-01 as a minimum start date (no data about pool servers before that) and yesterday as a maximum end date (not all blocks have been mined so far).
+        Both the start date and the end date are inclusive. Please use 2021-01-01 (YYYY-MM-DD) as a minimum start date (no data about pool servers before that) and yesterday as a maximum end date (not all blocks have been mined so far). No guarantees about correctness of execution if those requirements are not satisfied.
         <form action="." method="POST">
             {{ form.as_p }}
             {% csrf_token %}
