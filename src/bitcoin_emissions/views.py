@@ -11,17 +11,6 @@ from src.bitcoin_emissions.serializers import EmissionSerializer, EmissionSerial
 
 logger = logging.getLogger(__name__)
 
-"""
-DONE 1. The pool name (this one is relevant for the front end) - foreign key join with removing duplicate tuples 
-(pool, location) to preserve since we only care about location (?)
-2. Whether the server is cloudflare - boolean flag by location
-3. The average difficulty - create table, query by date 
-4. Average efficiency of mining equipment that were used to calculate the network hashrate - create table, 
-query by date
-5. The network hashrate - create table, query by date 
-DONE 6. The pool hashrate related to each entry ie. at the level of each server on each date - 
-attach to each foreign key the hashrate value for tuple (pool, location)
-"""
 
 class Co2AndElectricityPerPoolView(APIView):
     
