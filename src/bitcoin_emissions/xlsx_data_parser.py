@@ -22,6 +22,9 @@ class ExcelParser:
                     emission_factor, latitude, location_name, longitude, \
                         pool_name, source, validity_date = cls._fetch_data_about_pool(row, sheet)
 
+                    if not pool_name or (type(pool_name) is str and pool_name.isspace()):
+                        continue
+
                     pool, new_pool_was_created = Pool.objects.get_or_create(pool_name=pool_name)
                     if new_pool_was_created:
                         logger.info(f"Added pool {pool_name} to the database")
@@ -62,6 +65,10 @@ class ExcelParser:
             sheet = workbook[ANTMINER_DATA_SHEET_NAME]
             for row_index, row in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
                 name, release_date, efficiency = row
+                if not name or (type(name) is str and name.isspace()):
+                    continue
+                if type(release_date) == str:
+                    release_date = datetime.strptime(release_date, "%Y-%m-%d")
                 MiningGear.objects.get_or_create(
                     name=name,
                     release_date=release_date,
