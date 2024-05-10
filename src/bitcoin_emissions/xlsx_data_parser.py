@@ -5,6 +5,7 @@ import openpyxl
 from django.db import transaction
 from src.bitcoin_emissions.models import MiningGear
 from src.bitcoin_emissions.models import Pool, Location, PoolLocation
+from django.core import exceptions
 
 from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, CLOUDFLARE_REGION, \
     ANTMINER_DATA_SHEET_NAME
@@ -29,12 +30,16 @@ class ExcelParser:
                     if new_pool_was_created:
                         logger.info(f"Added pool {pool_name} to the database")
 
-                    location, new_location_was_created = Location.objects.get_or_create(
-                        location_name=location_name,
-                        latitude=latitude,
-                        longitude=longitude,
-                    )
-                    if new_location_was_created:
+                    try: 
+                        location = Location.objects.get(
+                            location_name=location_name
+                        )
+                    except Location.DoesNotExist:
+                        location = Location.objects.create(
+                            location_name = location_name,
+                            latitude=latitude,
+                            longitude=longitude,
+                        )
                         logger.info(f"Added location {location_name} to the database")
 
                     PoolLocation.objects.create(
