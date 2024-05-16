@@ -135,13 +135,13 @@ def mock_pool_servers(
         blockchain_pool=unknown_pool,
         blockchain_pool_location=unknown_loc,
         valid_for_date=datetime(year=2018, month=1, day=3),
-        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+        emission_factor=1
     )
     unrecognized_2018_01_03 = PoolLocation.objects.create(
         blockchain_pool=unrecognized_pool,
         blockchain_pool_location=unknown_loc,
         valid_for_date=datetime(year=2018, month=1, day=3),
-        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+        emission_factor=1
     )
     # 2021-01-01
     f2pool_london_2021_01_01 = PoolLocation.objects.create(
@@ -197,13 +197,13 @@ def mock_pool_servers(
         blockchain_pool=unknown_pool,
         blockchain_pool_location=unknown_loc,
         valid_for_date=datetime(year=2021, month=1, day=3),
-        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+        emission_factor=1
     )
     unrecognized_2021_01_03 = PoolLocation.objects.create(
         blockchain_pool=unrecognized_pool,
         blockchain_pool_location=unknown_loc,
         valid_for_date=datetime(year=2021, month=1, day=3),
-        emission_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+        emission_factor=1
     )
     return {
         "pools": {

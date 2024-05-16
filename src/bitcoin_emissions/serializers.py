@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField, CharField
 from django.db.models import Sum
 
-from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA
+from src.bitcoin_emissions.consts import CLOUDFLARE_LOCATION_DATA, UNKNOWN_POOL, UNKNOWN_POOL_USER_VIEW
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory, Location, \
     HashRatePerPoolServer, AverageEfficiency, BitcoinDifficulty, NetworkHashRate
 from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
@@ -17,8 +17,13 @@ class ServerHashrateSerializer(serializers.ModelSerializer):
             "hash_rate"
         ]
 
-    blockchain_pool_name = CharField(source="blockchain_pool.pool_name")
+    blockchain_pool_name = SerializerMethodField()
     hash_rate = serializers.FloatField()
+
+    def get_blockchain_pool_name(self, obj: HashRatePerPoolServer):
+        if obj.blockchain_pool.pool_name == UNKNOWN_POOL:
+            return UNKNOWN_POOL_USER_VIEW
+        return obj.blockchain_pool.pool_name
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -72,8 +77,11 @@ class EmissionSerializer(serializers.ModelSerializer):
             # electricity consumption/co2 emissions are the same for them, therefore we can just fetch any of them to return to the end user
             # unknown/unrecognized pools are always shoved in one mega-pool, meaning that the logic is correct for these cases as well.
             try:
+                blockchain_pool_name = server_hashrate['blockchain_pool_name'] 
+                if blockchain_pool_name == UNKNOWN_POOL_USER_VIEW:
+                    blockchain_pool_name = UNKNOWN_POOL
                 server_emissions = granural_data_queryset.filter(
-                    server_info__blockchain_pool__pool_name=server_hashrate['blockchain_pool_name']
+                    server_info__blockchain_pool__pool_name=blockchain_pool_name
                 )[0]
             except Exception as e:
                 # print(obj.date)
@@ -169,6 +177,8 @@ class EmissionSerializerPerPool(serializers.ModelSerializer):
 
 
     def get_blockchain_pool_name(self, obj: CO2ElectricityHistoryPerServer):
+        if obj.server_info.blockchain_pool.pool_name == UNKNOWN_POOL:
+            return UNKNOWN_POOL_USER_VIEW
         return obj.server_info.blockchain_pool.pool_name
     
     def get_servers_at_locations(self, obj: CO2ElectricityHistoryPerServer):

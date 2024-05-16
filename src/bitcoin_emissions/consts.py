@@ -22,6 +22,7 @@ UNKNOWN_POOL_LATITUDE = Decimal(40.527483)
 UNKNOWN_POOL_LONGITUDE = Decimal(-38.193144)
 UNKNOWN_CO2_EMISSIONS_FACTOR = Decimal(0.442)
 UNKNOWN_POOL = "unknown"
+UNKNOWN_POOL_USER_VIEW = "Unknown"
 UNKNOWN_POOL_LOCATION = "Unknown location"
-UNRECOGNIZED_POOL = "Pools with no server info"
+UNRECOGNIZED_POOL = "Pools with no Server Information"
 

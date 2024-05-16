@@ -14,7 +14,7 @@ def mock_hash_rate_data():
         "F2Pool": Decimal(10),  # 24 * X * Y = 24 * 10 * 3 = 720; 720 / 1 = 720 GWh
         "QueenPool": Decimal(5),  # 24 * X * Y = 24 * 5 * 3 = 360; 360 / 1 = 360 GWh (unknown)
         "City17": Decimal(3),  # 24 * X * Y = 24 * 3 * 3 =  216; 216 / 1 = 216 GWh (unknown)
-        "unknown": Decimal(1),  # 24 * X * Y = 24 * 1 * 3 = 72; 216 / 1 = 72 GWh (unknown)
+        UNKNOWN_POOL: Decimal(1),  # 24 * X * Y = 24 * 1 * 3 = 72; 216 / 1 = 72 GWh (unknown)
         "PoolWithoutInfo": Decimal(0.5),  # 24 * X * Y = 24 * 0.5 * 3 =  36; 216 / 1 = 36 GWh (unknown)
     }
 

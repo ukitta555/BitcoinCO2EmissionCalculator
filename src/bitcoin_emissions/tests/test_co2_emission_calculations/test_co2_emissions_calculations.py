@@ -48,6 +48,6 @@ class TestCO2EmissionsCalculation:
             "London": Decimal(((360 + 0 + 0) * 1000000 * 0.5) / 1000).quantize(Decimal("0.000001")),
             "Cloudflare": Decimal(((360 + 0 + 0) * 1000000 * 0.4) / 1000).quantize(Decimal("0.000001")),
             UNKNOWN_POOL_LOCATION:
-                Decimal(((360 + 216 + 72 + 36) * 1000000 * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000)
+                Decimal(((360 + 216 + 72 + 36) * 1000000 * 1) / 1000)
                 .quantize(Decimal("0.000001"))
         }

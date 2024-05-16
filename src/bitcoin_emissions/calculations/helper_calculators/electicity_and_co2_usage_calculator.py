@@ -93,7 +93,9 @@ class ElectricityAndCO2Calculator:
                 co2_emissions_for_server = \
                     cls.get_co2_emissions(
                             electricity_consumption_for_server=electricity_consumption_for_server,
-                            emissions_factor=UNKNOWN_CO2_EMISSIONS_FACTOR
+                            emissions_factor=PoolLocation.objects.find_latest_info_about_unknown_pools(
+                                date=calculation_date
+                            ).emission_factor
                         )
                 co2_emissions_tco2e_day[UNKNOWN_POOL_LOCATION] += co2_emissions_for_server
 

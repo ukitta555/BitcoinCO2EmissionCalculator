@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 import pytest
 
-from src.bitcoin_emissions.consts import UNKNOWN_POOL, UNKNOWN_POOL_LOCATION, UNRECOGNIZED_POOL
+from src.bitcoin_emissions.consts import UNKNOWN_POOL, UNKNOWN_POOL_LOCATION, UNKNOWN_POOL_USER_VIEW, UNRECOGNIZED_POOL
 
 
 pytestmark = pytest.mark.django_db
@@ -108,7 +108,7 @@ class TestHistoryPerPoolView:
                 "date": "2021-01-01",
                 "electricity_usage": 2.5,
                 "co2e_emissions": 3.0,
-                "blockchain_pool_name": UNKNOWN_POOL,
+                "blockchain_pool_name": UNKNOWN_POOL_USER_VIEW,
                 "servers_at_locations": [
                     {
                         "longitude": 3,

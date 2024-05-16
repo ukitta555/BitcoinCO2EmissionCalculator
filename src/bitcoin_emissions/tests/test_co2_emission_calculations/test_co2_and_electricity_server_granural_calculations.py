@@ -65,7 +65,7 @@ class TestCO2AndElectricityGranural:
             UNRECOGNIZED_POOL: [
                 {
                     "server_location": UNKNOWN_POOL_LOCATION,
-                    "co2_emissions": Decimal((24 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000000000000000001")),
+                    "co2_emissions": Decimal((24 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.000000000001")),
                     "electricity": Decimal(24 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
                 }
             ],
@@ -88,14 +88,14 @@ class TestCO2AndElectricityGranural:
             UNKNOWN_POOL: [
                 {
                     "server_location": UNKNOWN_POOL_LOCATION,
-                    "co2_emissions": Decimal((72 * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.00000000001")),
+                    "co2_emissions": Decimal((72 * GIGA_MULTIPLIER) / 1000).quantize(Decimal("0.00000000001")),
                     "electricity": Decimal(72 * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001"))
                 }
             ],
             UNRECOGNIZED_POOL: [
                 {
                     "server_location": UNKNOWN_POOL_LOCATION,
-                    "co2_emissions": Decimal(((360 + 216 + 36) * GIGA_MULTIPLIER * UNKNOWN_CO2_EMISSIONS_FACTOR) / 1000).quantize(Decimal("0.0000000000000000000001"), rounding=ROUND_DOWN),
+                    "co2_emissions": Decimal(((360 + 216 + 36) * GIGA_MULTIPLIER) / 1000).quantize(Decimal("0.00000001"), rounding=ROUND_DOWN),
                     "electricity": Decimal((360 + 216 + 36) * GIGA_MULTIPLIER).quantize(Decimal("0.00000000001")),
                 },
             ],

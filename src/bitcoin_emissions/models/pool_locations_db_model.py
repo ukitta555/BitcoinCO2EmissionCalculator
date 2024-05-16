@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import UniqueConstraint
 
+from src.bitcoin_emissions.consts import UNRECOGNIZED_POOL
 from src.bitcoin_emissions.models import Pool, Location
 from src.bitcoin_emissions.models.uuid_base_db_model import UUIDModel
 
@@ -16,7 +17,15 @@ class PoolLocationManager(models.Manager):
             blockchain_pool__pool_name=pool,
             valid_for_date=closest_date
         )
-
+    
+    def find_latest_info_about_unknown_pools(self, date) -> "PoolLocation":
+        closest_date = self \
+            .filter(valid_for_date__lte=date) \
+            .order_by("-valid_for_date")[0].valid_for_date
+        return self.filter(
+            blockchain_pool__pool_name=UNRECOGNIZED_POOL,
+            valid_for_date=closest_date
+        )[0]
 
 class PoolLocation(UUIDModel):
     class Meta:
