@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory
 from src.bitcoin_emissions.models import CO2ElectricityHistoryPerServer
-from src.bitcoin_emissions.serializers import EmissionSerializer, EmissionSerializerPerPool
+from src.bitcoin_emissions.serializers import EmissionSerializer, EmissionSerializerPerPool, EmissionSerializerShort
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class Co2AndElectricityPerLocationView(APIView):
                     end_date=end_date
                 )
             # logger.info(start_date, end_date)
-            serializer = EmissionSerializer(result, many=True)
+            serializer = EmissionSerializerShort(result, many=True)
             return Response(serializer.data)
         except Exception as e:
             logger.exception(e)

@@ -30,6 +30,9 @@ class PoolLocationManager(models.Manager):
 class PoolLocation(UUIDModel):
     class Meta:
         verbose_name_plural = "Servers (Location + Pool combinations)"
+        indexes = [
+            models.Index(fields=['blockchain_pool_location']),
+        ]
 
 
     blockchain_pool = models.ForeignKey(Pool, on_delete=models.CASCADE)

@@ -18,6 +18,10 @@ class ElectricityConsumptionAndCO2EEmissionHistoryManager(models.Manager):
 class PoolElectricityConsumptionAndCO2EEmissionHistory(UUIDModel):
     class Meta:
         verbose_name_plural = "Emissions history per location"
+        indexes = [
+            models.Index(fields=['date']),
+        ]
+
 
     date = models.DateField()
     electricity_usage = models.DecimalField(max_digits=24, decimal_places=6)

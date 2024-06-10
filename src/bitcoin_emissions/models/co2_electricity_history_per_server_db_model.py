@@ -29,6 +29,9 @@ class CO2ElectricityHistoryPerServerManager(models.Manager):
 class CO2ElectricityHistoryPerServer(UUIDModel):
     class Meta:
         verbose_name_plural = "Emissions history per pool"
+        indexes = [
+            models.Index(fields=['date']),
+        ]
 
     date = models.DateField()
     electricity_usage = models.DecimalField(max_digits=24, decimal_places=6)

@@ -8,8 +8,24 @@ from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissi
     HashRatePerPoolServer, AverageEfficiency, BitcoinDifficulty, NetworkHashRate
 from src.bitcoin_emissions.models.co2_electricity_history_per_server_db_model import CO2ElectricityHistoryPerServer
 
-
 class ServerHashrateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HashRatePerPoolServer
+        fields = [
+            "blockchain_pool_name",
+            "hash_rate"
+        ]
+
+    blockchain_pool_name = SerializerMethodField()
+    hash_rate = serializers.FloatField()
+
+    def get_blockchain_pool_name(self, obj: HashRatePerPoolServer):
+        if obj.blockchain_pool.pool_name == UNKNOWN_POOL:
+            return UNKNOWN_POOL_USER_VIEW
+        return obj.blockchain_pool.pool_name
+
+
+class ServerHashrateSerializerShort(serializers.ModelSerializer):
     class Meta:
         model = HashRatePerPoolServer
         fields = [
@@ -35,6 +51,60 @@ class LocationSerializer(serializers.ModelSerializer):
             "location_name"
         ]
 
+class EmissionSerializerShort(serializers.ModelSerializer):
+    class Meta:
+        model = PoolElectricityConsumptionAndCO2EEmissionHistory
+        fields = [
+            'date',
+            'location_of_servers',
+            'servers_at_location',
+        ]
+    
+    location_of_servers = LocationSerializer()
+    servers_at_location = SerializerMethodField()
+
+    def get_servers_at_location(self, obj: PoolElectricityConsumptionAndCO2EEmissionHistory):
+        hashrate_queryset = HashRatePerPoolServer.objects.filter(
+            date=obj.date,
+            blockchain_pool_location=obj.location_of_servers.uuid
+        )
+        hashrate_data: OrderedDict = ServerHashrateSerializerShort(hashrate_queryset, many=True).data
+
+        granural_data_queryset = CO2ElectricityHistoryPerServer.objects.filter(
+            date=obj.date,
+            server_info__blockchain_pool_location=obj.location_of_servers.uuid
+        )
+        total_electricity = 0
+        total_co2e = 0
+        for server_hashrate in hashrate_data:
+            # even if there are two servers at the same location for the same pool at the same date
+            # electricity consumption/co2 emissions are the same for them, therefore we can just fetch any of them to return to the end user
+            # unknown/unrecognized pools are always shoved in one mega-pool, meaning that the logic is correct for these cases as well.
+            try:
+                blockchain_pool_name = server_hashrate['blockchain_pool_name'] 
+                if blockchain_pool_name == UNKNOWN_POOL_USER_VIEW:
+                    blockchain_pool_name = UNKNOWN_POOL
+                server_emissions = granural_data_queryset.filter(
+                    server_info__blockchain_pool__pool_name=blockchain_pool_name
+                )[0]
+            except Exception as e:
+                # print(obj.date)
+                # print(server_hashrate['blockchain_pool_name'])
+                # print(obj.location_of_servers.location_name)
+                raise(e)
+            server_hashrate['electricity_usage'] = server_emissions.electricity_usage
+            server_hashrate['co2e_emissions'] = server_emissions.co2e_emissions
+            total_electricity += server_emissions.electricity_usage
+            total_co2e += server_emissions.co2e_emissions
+        
+        # print(obj.electricity_usage, total_electricity)
+        # print(obj.co2e_emissions, total_co2e)
+        assert(abs(total_electricity - obj.electricity_usage) <= 10 ** (-5))
+        assert(abs(total_co2e - obj.co2e_emissions) <= 10 ** (-5))
+        
+        return hashrate_data
+
+
 class EmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PoolElectricityConsumptionAndCO2EEmissionHistory
@@ -42,22 +112,22 @@ class EmissionSerializer(serializers.ModelSerializer):
             'date',
             'location_of_servers',
             'servers_at_location',
-            # 'electricity_usage',
-            # 'co2e_emissions',
-            # 'is_cloudflare',
-            # 'averaged_difficulty',
-            # 'network_hash_rate_720_block_window',
-            # 'averaged_gear_efficiency',
+            'electricity_usage',
+            'co2e_emissions',
+            'is_cloudflare',
+            'averaged_difficulty',
+            'network_hash_rate_720_block_window',
+            'averaged_gear_efficiency',
         ]
 
     location_of_servers = LocationSerializer()
     servers_at_location = SerializerMethodField()
-    # co2e_emissions = serializers.FloatField()
-    # electricity_usage = serializers.FloatField()
-    # is_cloudflare = SerializerMethodField()
-    # averaged_gear_efficiency = SerializerMethodField()
-    # averaged_difficulty = SerializerMethodField()
-    # network_hash_rate_720_block_window = SerializerMethodField()
+    co2e_emissions = serializers.FloatField()
+    electricity_usage = serializers.FloatField()
+    is_cloudflare = SerializerMethodField()
+    averaged_gear_efficiency = SerializerMethodField()
+    averaged_difficulty = SerializerMethodField()
+    network_hash_rate_720_block_window = SerializerMethodField()
 
     def get_servers_at_location(self, obj: PoolElectricityConsumptionAndCO2EEmissionHistory):
         hashrate_queryset = HashRatePerPoolServer.objects.filter(
