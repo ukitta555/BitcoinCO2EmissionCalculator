@@ -14,11 +14,11 @@ class ServerHashrateSerializer(serializers.ModelSerializer):
         model = HashRatePerPoolServer
         fields = [
             "blockchain_pool_name",
-            "hash_rate"
+            # "hash_rate"
         ]
 
     blockchain_pool_name = SerializerMethodField()
-    hash_rate = serializers.FloatField()
+    # hash_rate = serializers.FloatField()
 
     def get_blockchain_pool_name(self, obj: HashRatePerPoolServer):
         if obj.blockchain_pool.pool_name == UNKNOWN_POOL:
@@ -40,24 +40,24 @@ class EmissionSerializer(serializers.ModelSerializer):
         model = PoolElectricityConsumptionAndCO2EEmissionHistory
         fields = [
             'date',
-            'electricity_usage',
-            'co2e_emissions',
             'location_of_servers',
             'servers_at_location',
-            'is_cloudflare',
-            'averaged_difficulty',
-            'network_hash_rate_720_block_window',
-            'averaged_gear_efficiency',
+            # 'electricity_usage',
+            # 'co2e_emissions',
+            # 'is_cloudflare',
+            # 'averaged_difficulty',
+            # 'network_hash_rate_720_block_window',
+            # 'averaged_gear_efficiency',
         ]
 
     location_of_servers = LocationSerializer()
-    co2e_emissions = serializers.FloatField()
-    electricity_usage = serializers.FloatField()
     servers_at_location = SerializerMethodField()
-    is_cloudflare = SerializerMethodField()
-    averaged_gear_efficiency = SerializerMethodField()
-    averaged_difficulty = SerializerMethodField()
-    network_hash_rate_720_block_window = SerializerMethodField()
+    # co2e_emissions = serializers.FloatField()
+    # electricity_usage = serializers.FloatField()
+    # is_cloudflare = SerializerMethodField()
+    # averaged_gear_efficiency = SerializerMethodField()
+    # averaged_difficulty = SerializerMethodField()
+    # network_hash_rate_720_block_window = SerializerMethodField()
 
     def get_servers_at_location(self, obj: PoolElectricityConsumptionAndCO2EEmissionHistory):
         hashrate_queryset = HashRatePerPoolServer.objects.filter(
