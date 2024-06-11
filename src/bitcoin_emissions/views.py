@@ -1,5 +1,7 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+
+from django.utils.decorators import method_decorator
 
 from django.http import HttpResponseBadRequest
 from rest_framework.response import Response
@@ -7,6 +9,7 @@ from rest_framework.views import APIView
 
 from src.bitcoin_emissions.models import PoolElectricityConsumptionAndCO2EEmissionHistory
 from src.bitcoin_emissions.models import CO2ElectricityHistoryPerServer
+from django.core.cache import cache
 from src.bitcoin_emissions.serializers import EmissionSerializer, EmissionSerializerPerPool, EmissionSerializerShort
 
 logger = logging.getLogger(__name__)
@@ -44,9 +47,12 @@ class Co2AndElectricityPerPoolView(APIView):
             return HttpResponseBadRequest(content="Request failed while fetching the data.")
 
 
+
+
 class Co2AndElectricityPerLocationView(APIView):
 
     def get(self, request):
+        # cache.clear()
         try:
             start_date = datetime.strptime(request.GET.get('start', '2021-01-01'), '%Y-%m-%d')
             end_date = datetime.strptime(request.GET.get('end', '2021-01-01'), '%Y-%m-%d')
@@ -58,6 +64,12 @@ class Co2AndElectricityPerLocationView(APIView):
                         "whether you provided dates in a correct "
                         "format (YYYY-MM-DD)"
             )
+        cache_condition = (end_date - timedelta(days=7)) == start_date 
+        if cache_condition:
+            cache_result = cache.get(f'cache_result_{start_date.strftime("%m/%d/%Y")}_{end_date.strftime("%m/%d/%Y")}')
+            if cache_result:
+                return Response(cache_result)
+
         try:
             result = \
                 PoolElectricityConsumptionAndCO2EEmissionHistory\
@@ -68,7 +80,11 @@ class Co2AndElectricityPerLocationView(APIView):
                 )
             # logger.info(start_date, end_date)
             serializer = EmissionSerializerShort(result, many=True)
-            return Response(serializer.data)
+            response = Response(serializer.data)
+            if cache_condition:
+                cache.set(f'cache_result_{start_date.strftime("%m/%d/%Y")}_{end_date.strftime("%m/%d/%Y")}', serializer.data, 60 * 60 * 2)
+            return response
+            
         except Exception as e:
             logger.exception(e)
             return HttpResponseBadRequest(content="Request failed while fetching the data.")

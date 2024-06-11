@@ -93,6 +93,13 @@ TEMPLATES = [
 CORS_ALLOW_ALL_ORIGINS = True
 WSGI_APPLICATION = "src.wsgi.application"
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table",
+    }
+}
+
 
 
 # Database
