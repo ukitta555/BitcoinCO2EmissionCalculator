@@ -58,10 +58,14 @@ class EmissionSerializerShort(serializers.ModelSerializer):
             'date',
             'location_of_servers',
             'servers_at_location',
+            'co2e_emissions',
+            'electricity_usage'
         ]
     
     location_of_servers = LocationSerializer()
     servers_at_location = SerializerMethodField()
+    co2e_emissions = serializers.FloatField()
+    electricity_usage = serializers.FloatField()
 
     def get_servers_at_location(self, obj: PoolElectricityConsumptionAndCO2EEmissionHistory):
         hashrate_queryset = HashRatePerPoolServer.objects.filter(

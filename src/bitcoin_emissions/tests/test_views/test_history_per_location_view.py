@@ -36,27 +36,27 @@ class TestHistoryPerLocationView:
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": "F2Pool",
-                        "hash_rate": 5.0,
+                        # "hash_rate": 5.0,
                         "co2e_emissions": 0.5,
                         "electricity_usage": 0.5,
                     },
                     {
                         "blockchain_pool_name": "QueenPool",
-                        "hash_rate": 5.0,
+                        # "hash_rate": 5.0,
                         "co2e_emissions": 0.5,
                         "electricity_usage": 0.5,
                     },
                     {
                         "blockchain_pool_name": "City17",
-                        "hash_rate": 3.0,
+                        # "hash_rate": 3.0,
                         "co2e_emissions": 1,
                         "electricity_usage": 0,
                     },
                 ],
-                "is_cloudflare": False,
-                "averaged_gear_efficiency": 2.0,
-                "network_hash_rate_720_block_window": 100.5,
-                "averaged_difficulty": 4.0,
+                # "is_cloudflare": False,
+                # "averaged_gear_efficiency": 2.0,
+                # "network_hash_rate_720_block_window": 100.5,
+                # "averaged_difficulty": 4.0,
             },
             {
                 "co2e_emissions": 4.0,
@@ -70,15 +70,15 @@ class TestHistoryPerLocationView:
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": "F2Pool",
-                        "hash_rate": 5.0,
+                        # "hash_rate": 5.0,
                         "co2e_emissions": 4.0,
                         "electricity_usage": 3.0,
                     }
                 ],
-                "is_cloudflare": True,
-                "averaged_gear_efficiency": 2.0,
-                "network_hash_rate_720_block_window": 100.5,
-                "averaged_difficulty": 4.0,
+                # "is_cloudflare": True,
+                # "averaged_gear_efficiency": 2.0,
+                # "network_hash_rate_720_block_window": 100.5,
+                # "averaged_difficulty": 4.0,
             },
             {
                 "co2e_emissions": 6.0,
@@ -92,20 +92,20 @@ class TestHistoryPerLocationView:
                 "servers_at_location": [
                     {
                         "blockchain_pool_name": UNKNOWN_POOL_USER_VIEW,
-                        "hash_rate": 1.0,
+                        # "hash_rate": 1.0,
                         "co2e_emissions": 3,
                         "electricity_usage": 2.5,
                     },
                     {
                         "blockchain_pool_name": UNRECOGNIZED_POOL,
-                        "hash_rate": 1.0,
+                        # "hash_rate": 1.0,
                         "co2e_emissions": 3,
                         "electricity_usage": 2.5,
                     },
                 ],
-                "is_cloudflare": False,
-                "averaged_gear_efficiency": 2.0,
-                "network_hash_rate_720_block_window": 100.5,
-                "averaged_difficulty": 4.0,
+                # "is_cloudflare": False,
+                # "averaged_gear_efficiency": 2.0,
+                # "network_hash_rate_720_block_window": 100.5,
+                # "averaged_difficulty": 4.0,
             },
         ]
