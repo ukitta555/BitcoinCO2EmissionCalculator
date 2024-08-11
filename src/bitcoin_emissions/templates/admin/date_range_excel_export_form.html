@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <div>
+        Both the start date and the end date are inclusive. Please use 2021-01-01 (YYYY-MM-DD) as a minimum start date (no data about pool servers before that) and today as a maximum. No guarantees about correctness of execution if those requirements are not satisfied.
+        Please try to export at most one year per request so that the system is not overloaded.
+        <form action="." method="POST">
+            {{ form.as_p }}
+            {% csrf_token %}
+
+                <!-- <input type="date" id="start">
+                <input type="date" id="end"> -->
+                <button type="submit">Export Excel file</button>
+        </form>
+    </div>
+    <br />
+
+{% endblock %}

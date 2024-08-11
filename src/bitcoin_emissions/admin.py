@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from io import BytesIO
 from tempfile import NamedTemporaryFile
+import time
 from venv import logger
 from django import forms
 from django.contrib import admin
@@ -96,76 +97,93 @@ class LocationEmissionHistoryAdmin(admin.ModelAdmin):
 
     def export_data(self, request):
         if request.user.is_authenticated:
-            meta = PoolElectricityConsumptionAndCO2EEmissionHistory._meta
-            columns = [
-                'date', 
-                'total_electricity_usage_for_location_at_this_date',
-                'total_co2e_emissions_for_location_at_this_date',
-                'location_of_servers.latitude',
-                'location_of_servers.longitude',  
-                'location_of_servers.location_name', 
-                'is_cloudflare',
-                'averaged_difficulty',
-                'network_hash_rate_720_block_window',
-                'averaged_gear_efficiency',
-                'ServerData.blockchain_pool_name',
-                'ServerData.hash_rate_at_this_date',
-                'ServerData.electricity_usage_at_this_date',
-                'ServerData.co2e_emissions_at_this_date',
-            ]
+            if request.method == "POST":
+                start_date = datetime.strptime(request.POST.get('start_date', '2021-01-01'), '%Y-%m-%d')
+                end_date = datetime.strptime(request.POST.get('end_date', '2021-01-01'), '%Y-%m-%d')
 
-            response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(meta)
-            
-            wb = Workbook()
-            sheet = wb.active
-            sheet.title = "Emissions data"
-            sheet.append(columns)
-            serialized_data = EmissionSerializer(PoolElectricityConsumptionAndCO2EEmissionHistory.objects.all().select_related('location_of_servers'), many=True)        
-            normalized_df = pd.json_normalize(
-                serialized_data.data, 
-                'servers_at_location', 
-                [
-                    'date',
-                    'electricity_usage',
-                    'co2e_emissions',
-                    [
-                        'location_of_servers',
-                        'latitude'
-                    ],
-                    [
-                        'location_of_servers',
-                        'longitude'
-                    ],
-                    [
-                        'location_of_servers',
-                        'location_name'
-                    ],
+                meta = PoolElectricityConsumptionAndCO2EEmissionHistory._meta
+                columns = [
+                    'date', 
+                    'total_electricity_usage_for_location_at_this_date',
+                    'total_co2e_emissions_for_location_at_this_date',
+                    'location_of_servers.latitude',
+                    'location_of_servers.longitude',  
+                    'location_of_servers.location_name', 
                     'is_cloudflare',
                     'averaged_difficulty',
                     'network_hash_rate_720_block_window',
-                    'averaged_gear_efficiency'
-                ],
-                record_prefix="ServerData."
-            )
-            
-            columns_list = normalized_df.columns.to_list()
-            columns_list = columns_list[4:] + columns_list[0:4]
+                    'averaged_gear_efficiency',
+                    'ServerData.blockchain_pool_name',
+                    'ServerData.hash_rate_at_this_date',
+                    'ServerData.electricity_usage_at_this_date',
+                    'ServerData.co2e_emissions_at_this_date',
+                ]
 
-            normalized_df = normalized_df[columns_list]
+                response = HttpResponse(content_type='application/ms-excel')
+                response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(meta)
+                
+                wb = Workbook()
+                sheet = wb.active
+                sheet.title = "Emissions data"
+                sheet.append(columns)
+                serialized_data = EmissionSerializer(
+                    PoolElectricityConsumptionAndCO2EEmissionHistory.objects.get_history_for_range(
+                        start_date=start_date,
+                        end_date=end_date
+                    ),
+                    many=True
+                )        
+                normalized_df = pd.json_normalize(
+                    serialized_data.data, 
+                    'servers_at_location', 
+                    [
+                        'date',
+                        'electricity_usage',
+                        'co2e_emissions',
+                        [
+                            'location_of_servers',
+                            'latitude'
+                        ],
+                        [
+                            'location_of_servers',
+                            'longitude'
+                        ],
+                        [
+                            'location_of_servers',
+                            'location_name'
+                        ],
+                        'is_cloudflare',
+                        'averaged_difficulty',
+                        'network_hash_rate_720_block_window',
+                        'averaged_gear_efficiency'
+                    ],
+                    record_prefix="ServerData."
+                )
 
-            for obj in normalized_df.iterrows():
-                row = list(obj[1])
-                sheet.append(row)
+                columns_list = normalized_df.columns.to_list()
+                columns_list = columns_list[4:] + columns_list[0:4]
+
+                normalized_df = normalized_df[columns_list]
+
+                for obj in normalized_df.iterrows():
+                    row = list(obj[1])
+                    sheet.append(row)
 
 
-            with NamedTemporaryFile() as tmp:
-                wb.save(tmp.name)
-                response.write(tmp.read())
+                with NamedTemporaryFile() as tmp:
+                    wb.save(tmp.name)
+                    response.write(tmp.read())
 
 
-            self.message_user(request, "All emission records (grouped by location) have been exported to an Excel file. Please check your downloads folder!")
-            return response
+                self.message_user(request, "All emission records (grouped by location) have been exported to an Excel file. Please check your downloads folder!")
+
+                return response
+            else:
+                form = DateRangeForm()
+                payload = {"form": form}
+                return render(
+                    request, "admin/date_range_excel_export_form.html", payload
+                )
         else:
             return redirect("../..")
         
