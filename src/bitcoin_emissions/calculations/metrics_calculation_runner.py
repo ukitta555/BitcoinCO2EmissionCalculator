@@ -31,12 +31,12 @@ class MetricsCalculationRunner:
 
     @classmethod
     def calculate_metrics_for_date_range(cls, start_date: datetime, end_date: datetime | None = None):
-        date_to_fetch_blocks_for = start_date.replace(tzinfo=pytz.UTC)
-        current_date = datetime.today().replace(tzinfo=pytz.UTC)
+        date_to_fetch_blocks_for = start_date
+        current_date = datetime.today()
         if end_date is None:
             end_date = current_date
         else:
-            end_date = end_date.replace(tzinfo=pytz.UTC)
+            end_date = end_date
         rolling_window = deque(maxlen=720)
 
         unknown_pools = set()

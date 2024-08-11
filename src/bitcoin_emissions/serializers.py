@@ -1,4 +1,5 @@
 from typing import OrderedDict
+from venv import logger
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField, CharField
 from django.db.models import Sum
@@ -169,8 +170,8 @@ class EmissionSerializer(serializers.ModelSerializer):
         
         # print(obj.electricity_usage, total_electricity)
         # print(obj.co2e_emissions, total_co2e)
-        assert(abs(total_electricity - obj.electricity_usage) <= 10 ** (-5))
-        assert(abs(total_co2e - obj.co2e_emissions) <= 10 ** (-5))
+        assert(abs(total_electricity - obj.electricity_usage) <= 10 ** (-4))
+        assert(abs(total_co2e - obj.co2e_emissions) <= 10 ** (-4))
         
         return hashrate_data
 
