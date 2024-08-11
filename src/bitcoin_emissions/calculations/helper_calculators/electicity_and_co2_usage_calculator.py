@@ -21,6 +21,11 @@ class ElectricityAndCO2Calculator:
             pool_hash_rates: dict,
             calculation_date: datetime
     ):
+        calculation_date = datetime(
+                    year=calculation_date.year,
+                    month=calculation_date.month,
+                    day=calculation_date.day
+        ) # recreate a datetime obj without timezone - might have problems but we are ok with this approximation
         average_gear_efficiency_j_gh = MiningGear.objects\
             .find_average_gear_efficiency_for_date(
                 date=calculation_date

@@ -1,3 +1,5 @@
+import enum
+import json
 import logging
 from collections import deque
 from datetime import datetime, timedelta
@@ -5,6 +7,7 @@ from fractions import Fraction
 import time
 
 import pandas as pd
+import pytz
 import requests
 from django.core import exceptions
 
@@ -20,15 +23,20 @@ from src.bitcoin_emissions.models.pool_locations_db_model import PoolLocation
 
 logger = logging.getLogger(__name__)
 
+class BeforeOrAfter(enum.Enum):
+    BEFORE = 0
+    AFTER = 1
 
 class MetricsCalculationRunner:
 
     @classmethod
-    def calculate_metrics_for_date_range(cls, start_date, end_date=None):
-        date_to_fetch_blocks_for = start_date
-        current_date = datetime.today()
+    def calculate_metrics_for_date_range(cls, start_date: datetime, end_date: datetime | None = None):
+        date_to_fetch_blocks_for = start_date.replace(tzinfo=pytz.UTC)
+        current_date = datetime.today().replace(tzinfo=pytz.UTC)
         if end_date is None:
             end_date = current_date
+        else:
+            end_date = end_date.replace(tzinfo=pytz.UTC)
         rolling_window = deque(maxlen=720)
 
         unknown_pools = set()
@@ -77,8 +85,10 @@ class MetricsCalculationRunner:
                 rolling_window.extend(reversed(cleansed_block_range))
 
             assert cls._validate_rolling_window(rolling_window), \
-                "Rolling window should always have 720 elements when switching to a new date!"
-            assert len(rolling_window) == 720
+                "Rolling window invariant broken!"
+            assert len(rolling_window) == 720, \
+                "Rolling window should always have 720 elements when switching to a new date!"  
+
 
             cls._save_info_about_rolling_window(
                 rolling_window=rolling_window,
@@ -107,49 +117,98 @@ class MetricsCalculationRunner:
         logger.info(unknown_pools)
 
     @classmethod
-    def _get_blocks_for_date(cls, date_to_fetch_blocks_for):
+    def _get_closest_block_to_date(cls, date: datetime, before_or_after: BeforeOrAfter):
         result = requests.get(
-            url=f"https://chain.api.btc.com/v3/block/date/"
-                f"{date_to_fetch_blocks_for.strftime('%Y%m%d')}",
+            url=f"https://mempool.space/api/v1/mining/blocks/timestamp/"
+                f"{int(date.timestamp())}",
             headers={"content-type": "application/json"})
-        data = result.json().get("data")  # get dict representation of json response
-        if data:
-            return data
+        
+        while result.status_code != 200:
+            logger.info(f"Status code for fetching closest block to date: {result.status_code}.. sleeping for 2 seconds before retrying")
+            time.sleep(2)
+            result = requests.get(
+                url=f"https://mempool.space/api/v1/mining/blocks/timestamp/"
+                    f"{int(date.timestamp())}",
+                headers={"content-type": "application/json"}
+            )
+        
+        height = result.json().get("height")  # get dict representation of json response
+        if height is not None:
+            return height if before_or_after == BeforeOrAfter.BEFORE else height + 1 
         else:
-            logger.info(f"No blocks were mined on {date_to_fetch_blocks_for}")
+            logger.info(f"Error while fetching the closest block for {date} date")
+            raise Exception(f"Error while fetching the closest block for {date} date - no height provided by the API")
+
+    @classmethod
+    def _get_blocks_for_date(cls, date_to_fetch_blocks_for):
+        # For future me: we had to replace btc.com API since it was really instable in terms of availability.
+
+        # result = requests.get(
+        #     url=f"https://chain.api.btc.com/v3/block/date/"
+        #         f"{date_to_fetch_blocks_for.strftime('%Y%m%d')}",
+        #     headers={"content-type": "application/json"})
+        # data = result.json().get("data")  # get dict representation of json response
+        # if data:
+        #     return data
+        # else:
+        #     logger.info(f"No blocks were mined on {date_to_fetch_blocks_for}")
+        start_block_height_for_the_date = cls._get_closest_block_to_date(
+            date=date_to_fetch_blocks_for,
+            before_or_after=BeforeOrAfter.AFTER
+        )
+        end_block_height_for_the_date = cls._get_closest_block_to_date(
+            date=date_to_fetch_blocks_for + timedelta(days=1),
+            before_or_after=BeforeOrAfter.BEFORE
+        )
+        logger.info(f"Fetching block range {start_block_height_for_the_date}-{end_block_height_for_the_date}")
+        result = cls._fetch_interval_of_blocks(
+            start=start_block_height_for_the_date,
+            end=end_block_height_for_the_date
+        )
+        return list(reversed(result))
 
     @classmethod
     def _fetch_interval_of_blocks(cls, start: int, end: int):
         result = deque()
         # +1 for the interval [start, end] to be inclusive
-        for starting_block_of_a_chunk in range(start, end + 1, 50):
-            # (0,51) -> (0, 49) + (50, 51)
-            blocks_to_fetch = ",".join(
-                [
-                    str(i) for i in range(
-                        starting_block_of_a_chunk,
-                        min(starting_block_of_a_chunk + 50, end + 1)
-                    )
-                ]
+        for starting_block_of_a_chunk in range(start, end + 1, 15):
+            # (0,16) -> (0, 14) + (15, 16)
+            ending_block_of_a_chunk = min(starting_block_of_a_chunk + 14, end) 
+            print(starting_block_of_a_chunk, ending_block_of_a_chunk)
+            
+            logger.info(f"Trying to fetch information about next {ending_block_of_a_chunk - starting_block_of_a_chunk + 1} blocks...")
+            api_response = requests.get(
+                f"https://mempool.space/api/v1/blocks/{ending_block_of_a_chunk}",
+                headers={"content-type": "application/json"}
             )
-            api_response = {'data': None}
 
-            while api_response['data'] is None:
-                logger.info(f"Trying to fetch information about next 50 blocks...")
+            while api_response.status_code != 200:
+                logger.info(f"Status code is {api_response.status_code}, trying again after a 2 second sleep...")
+                time.sleep(2)
                 api_response = requests.get(
-                    f"https://chain.api.btc.com/v3/block/{blocks_to_fetch}",
+                    f"https://mempool.space/api/v1/blocks/{ending_block_of_a_chunk}",
                     headers={"content-type": "application/json"}
-                ).json()
-                if api_response.get('err_no') == 500 or api_response['data'] is None:
-                    logger.info(f"API error, error code: {api_response.get('err_no')}, data returned: {api_response.get('data')}")
+                )
 
-            logger.info(
+            api_response = json.loads(api_response.text)
+            
+            if ending_block_of_a_chunk - starting_block_of_a_chunk + 1 == 15:
+                logger.info(
                     f"Fetched info for blocks ("
-                    f"{api_response['data'][0]['height']}, "
-                    f"{api_response['data'][-1]['height']}) "
+                    f"{api_response[-1]['height']}, "
+                    f"{api_response[0]['height']}) "
                     f"to fill the rolling window to 720 elements"
                 )
-            result.extend(api_response["data"])
+                result.extend(reversed(api_response))
+            else:
+                api_response = list(reversed(api_response))
+                logger.info(
+                    f"Fetched info for blocks ("
+                    f"{api_response[-(ending_block_of_a_chunk - starting_block_of_a_chunk + 1)]['height']},"
+                    f"{api_response[-1]['height']}) "
+                    f"to fill the rolling window to 720 elements"
+                )
+                result.extend(api_response[-(ending_block_of_a_chunk - starting_block_of_a_chunk + 1):])
         return result
 
     @classmethod
@@ -159,7 +218,7 @@ class MetricsCalculationRunner:
             clean_block_info = {
                 "height": block["height"],
                 "difficulty": block["difficulty"],
-                "pool_name": block["extras"]["pool_name"],
+                "pool_name": block["extras"]["pool"]["name"],
                 "date": datetime.fromtimestamp(block["timestamp"]),
             }
             blocks_info.append(clean_block_info)
